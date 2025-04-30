@@ -16,10 +16,12 @@ public class Main {
             System.out.println("Konekcija sa bazom NIJE ostvarena!");
         }
 
+        /*
         javax.swing.SwingUtilities.invokeLater(() -> {
             RegistracijaFrame frame = new RegistracijaFrame();
             frame.setVisible(true);
         });
+        */
 
         javax.swing.SwingUtilities.invokeLater(() -> {
             PregledPsihoterapeutaFrame frame = new PregledPsihoterapeutaFrame();

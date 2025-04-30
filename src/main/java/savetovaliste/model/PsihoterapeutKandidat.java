@@ -17,6 +17,8 @@ public class PsihoterapeutKandidat {
     private String fakultetNaziv;
 
     private String stepenId;
+    private String stepenNaziv;
+
     private boolean registrovan;
 
     public PsihoterapeutKandidat() {}
@@ -37,7 +39,7 @@ public class PsihoterapeutKandidat {
         this.stepenId = stepenId;
     }
 
-    public PsihoterapeutKandidat(int psihoterapeutId, long jmbg, String ime, String prezime, Date datumRodjenja, String telefon, String prebivaliste, String email, String fakultetNaziv, String stepenId) {
+    public PsihoterapeutKandidat(int psihoterapeutId, long jmbg, String ime, String prezime, Date datumRodjenja, String telefon, String prebivaliste, String email, String fakultetNaziv, String stepenNaziv) {
         this.psihoterapeutId = psihoterapeutId;
         this.jmbg = jmbg;
         this.ime = ime;
@@ -47,8 +49,9 @@ public class PsihoterapeutKandidat {
         this.prebivaliste = prebivaliste;
         this.email = email;
         this.fakultetNaziv = fakultetNaziv;
-        this.stepenId = stepenId;
+        this.stepenNaziv = stepenNaziv;
     }
+
 
     // Getteri i setteri
 
@@ -103,7 +106,13 @@ public class PsihoterapeutKandidat {
         this.registrovan = registrovan;
     }
 
+    public String getStepenNaziv() {
+        return stepenNaziv;
+    }
 
+    public void setStepenNaziv(String stepenNaziv) {
+        this.stepenNaziv = stepenNaziv;
+    }
 
     public String getStepenId() { return stepenId; }
     public void setStepenId(String stepenId) { this.stepenId = stepenId; }

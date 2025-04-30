@@ -29,10 +29,10 @@ public class DatabaseConnection {
             // a svaki sledeci put samo vracamo tu postojecu
             if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(url, korisnik, lozinka);
-                System.out.println("Uspesno povezivanje sa bazom!");
+                //System.out.println("Uspesno povezivanje sa bazom!");
             }
         } catch (SQLException e) {
-            System.out.println("Neuspesno povezivanje sa bazom!");
+            //System.out.println("Neuspesno povezivanje sa bazom!");
             throw new RuntimeException(e);
         }
         return connection;
