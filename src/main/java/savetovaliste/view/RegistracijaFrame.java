@@ -4,14 +4,12 @@ import com.toedter.calendar.JDateChooser;
 import savetovaliste.model.Fakultet;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.model.Univerzitet;
-import savetovaliste.repository.FakultetRep;
-import savetovaliste.repository.PsihoKandRep;
-import savetovaliste.repository.UniverzitetRep;
+import savetovaliste.dao.FakultetDao;
+import savetovaliste.dao.PsihoKandDao;
+import savetovaliste.dao.UniverzitetDao;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 public class RegistracijaFrame extends JFrame{
@@ -102,6 +100,7 @@ public class RegistracijaFrame extends JFrame{
         gbc.gridx = 0; gbc.gridy = ++y;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
         add(btnRegistruj, gbc);
 
         // Poveži dugme sa akcijom
@@ -117,7 +116,7 @@ public class RegistracijaFrame extends JFrame{
 
     private void ucitajUniverzitete() {
         cbUniverziteti.removeAllItems();
-        List<Univerzitet> univerziteti = new UniverzitetRep().getSviUniverziteti();
+        List<Univerzitet> univerziteti = new UniverzitetDao().getSviUniverziteti();
         for (Univerzitet u : univerziteti) {
             cbUniverziteti.addItem(u);
         }
@@ -129,7 +128,7 @@ public class RegistracijaFrame extends JFrame{
         cbFakulteti.removeAllItems();
         cbFakulteti.addItem(new Fakultet(0, "-- izaberite fakultet --"));
 
-        List<Fakultet> fakulteti = new FakultetRep().getSviFakulteti();
+        List<Fakultet> fakulteti = new FakultetDao().getSviFakulteti();
         for (Fakultet f : fakulteti) {
             cbFakulteti.addItem(f);  // ubacuješ OBJEKAT
         }
@@ -155,7 +154,7 @@ public class RegistracijaFrame extends JFrame{
             String lozinka = new String(tfLozinka.getPassword()).trim();
             java.util.Date izabraniDatum = datumRodjenjaChooser.getDate();
 
-            // ✅ Validacije unosa
+            //  Validacije unosa
             if (ime.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Unesite ime.");
                 return;
@@ -207,7 +206,7 @@ public class RegistracijaFrame extends JFrame{
             }
 
             // Provera da li je već registrovan
-            PsihoKandRep rep = new PsihoKandRep();
+            PsihoKandDao rep = new PsihoKandDao();
             if (rep.daLiJeRegistrovan(jmbgText, email)) {
                 JOptionPane.showMessageDialog(this, "Korisnik sa ovim JMBG-om ili email adresom je već registrovan.");
                 return;
@@ -235,7 +234,7 @@ public class RegistracijaFrame extends JFrame{
             String stepenId = cbStepeni.getSelectedItem().toString();
             k.setStepenId(stepenId);
 
-            PsihoKandRep psiho = new PsihoKandRep();
+            PsihoKandDao psiho = new PsihoKandDao();
 
             if (psiho.registrujKandidata(k)) {
                 psiho.postaviRegistrovan(jmbgText);  // <--- OVDE DODAJEŠ
