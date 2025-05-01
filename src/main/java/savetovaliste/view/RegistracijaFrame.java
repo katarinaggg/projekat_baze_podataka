@@ -25,7 +25,10 @@ public class RegistracijaFrame extends JFrame{
     private JComboBox<Fakultet> cbFakulteti = new JComboBox<>();
     private JComboBox<String> cbStepeni = new JComboBox<>();
 
-    public RegistracijaFrame() {
+    private PregledPsihoterapeutaFrame parentFrame;
+
+    public RegistracijaFrame(PregledPsihoterapeutaFrame parentFrame) {
+        this.parentFrame = parentFrame;
         setTitle("Registracija psihoterapeuta");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 550);
@@ -239,6 +242,12 @@ public class RegistracijaFrame extends JFrame{
             if (psiho.registrujKandidata(k)) {
                 psiho.postaviRegistrovan(jmbgText);  // <--- OVDE DODAJEŠ
                 JOptionPane.showMessageDialog(this, "Uspešna registracija!");
+
+                // ✨ Osveži tabelu u glavnom prozoru
+                if (parentFrame != null) {
+                    parentFrame.osveziTabelu();
+                }
+
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Greška pri registraciji.");

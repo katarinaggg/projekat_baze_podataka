@@ -66,6 +66,7 @@ public class PregledPsihoterapeutaFrame extends JFrame {
 
         ImageIcon prijavaIkona = new ImageIcon("src/main/resources/login.png");
         ImageIcon registracijaIkona = new ImageIcon("src/main/resources/signup.png");
+        ImageIcon obrisiIkona = new ImageIcon("src/main/resources/delete.png");
 
         JButton prijavaBtn = new JButton("Prijava", prijavaIkona);
         prijavaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -78,15 +79,25 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         registracijaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         registracijaBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         registracijaBtn.addActionListener(e -> {
-            new RegistracijaFrame().setVisible(true);
+            new RegistracijaFrame(this).setVisible(true);
         });
 
+        JButton obrisiBtn = new JButton("Obriši kandidata", obrisiIkona);
+        obrisiBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        obrisiBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        obrisiBtn.addActionListener(e -> obrisiSelektovanogKandidata());
 
         JPanel dugmiciPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 10));
         dugmiciPanel.setBackground(new Color(172, 230, 180));
 
+        Dimension dugmeDimenzije = new Dimension(110, 80); // širina, visina
+        prijavaBtn.setPreferredSize(dugmeDimenzije);
+        registracijaBtn.setPreferredSize(dugmeDimenzije);
+        obrisiBtn.setPreferredSize(dugmeDimenzije);
+
         dugmiciPanel.add(prijavaBtn);
         dugmiciPanel.add(registracijaBtn);
+        dugmiciPanel.add(obrisiBtn);
 
         add(dugmiciPanel, BorderLayout.SOUTH);
     }
@@ -108,4 +119,35 @@ public class PregledPsihoterapeutaFrame extends JFrame {
             tableModel.addRow(red);
         }
     }
+
+    public void osveziTabelu() {
+        tableModel.setRowCount(0); // briši sve redove
+        ucitajPodatke();           // ponovo učitaj
+    }
+
+    private void obrisiSelektovanogKandidata() {
+        int selektovaniRed = table.getSelectedRow();
+        if (selektovaniRed == -1) {
+            JOptionPane.showMessageDialog(this, "Molimo selektujte kandidata za brisanje.");
+            return;
+        }
+
+        String email = tableModel.getValueAt(selektovaniRed, 4).toString(); // Kolona 4 je email
+        String jmbg = JOptionPane.showInputDialog(this, "Unesite JMBG kandidata radi potvrde:");
+
+        if (jmbg == null || jmbg.trim().isEmpty()) {
+            return;  // Otkaže unos
+        }
+
+        int potvrda = JOptionPane.showConfirmDialog(this, "Da li ste sigurni da želite da obrišete kandidata?", "Potvrda", JOptionPane.YES_NO_OPTION);
+
+        if (potvrda == JOptionPane.YES_OPTION) {
+            PsihoKandDao dao = new PsihoKandDao();
+            dao.obrisiKandidata(jmbg);
+            JOptionPane.showMessageDialog(this, "Kandidat je obrisan.");
+            osveziTabelu();
+        }
+    }
+
+
 }
