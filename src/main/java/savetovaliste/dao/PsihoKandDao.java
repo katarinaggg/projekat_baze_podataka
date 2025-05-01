@@ -122,20 +122,24 @@ public class PsihoKandDao {
 
 
     public boolean registrujKandidata(PsihoterapeutKandidat k) {
-        String sql = "INSERT INTO psihoterapeut_kandidat (jmbg, ime, prezime, datum_rodjenja, telefon, prebivaliste, email, lozinka, fakultet_id, stepen_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "{CALL registruj_kandidata(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, k.getJmbg());
-            ps.setString(2, k.getIme());
-            ps.setString(3, k.getPrezime());
-            ps.setDate(4, Date.valueOf(k.getDatumRodjenja()));
-            ps.setString(5, k.getTelefon());
-            ps.setString(6, k.getPrebivaliste());
-            ps.setString(7, k.getEmail());
-            ps.setString(8, k.getLozinka());
-            ps.setInt(9, k.getFakultetId());
-            ps.setString(10, k.getStepenId());
-            return ps.executeUpdate() > 0;
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.setLong(1, k.getJmbg());
+            cs.setString(2, k.getIme());
+            cs.setString(3, k.getPrezime());
+            cs.setDate(4, Date.valueOf(k.getDatumRodjenja()));
+            cs.setString(5, k.getTelefon());
+            cs.setString(6, k.getPrebivaliste());
+            cs.setString(7, k.getEmail());
+            cs.setString(8, k.getLozinka());
+            cs.setInt(9, k.getFakultetId());
+            cs.setString(10, k.getStepenId());
+
+            cs.execute();
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -143,18 +147,16 @@ public class PsihoKandDao {
     }
 
     public void postaviRegistrovan(String jmbg) {
-        String query = "UPDATE psihoterapeut_kandidat SET registrovan = TRUE WHERE jmbg = ?";
-
+        String sql = "{CALL postavi_registrovan(?)}";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, jmbg);
-            stmt.executeUpdate();
-
+             CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setString(1, jmbg);
+            cs.execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public PsihoterapeutKandidat login(String email, String lozinka) {
 
@@ -197,5 +199,20 @@ public class PsihoKandDao {
         // ako ne uspe vratice null
         return null;
     }
+
+    public void obrisiKandidata(String jmbg) {
+        String sql = "{CALL obrisi_kandidata(?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.setString(1, jmbg);
+            cs.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
