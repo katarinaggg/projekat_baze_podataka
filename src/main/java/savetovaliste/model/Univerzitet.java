@@ -31,4 +31,6 @@ public class Univerzitet {
     public String toString() {
         return naziv;
     }
+
+
 }

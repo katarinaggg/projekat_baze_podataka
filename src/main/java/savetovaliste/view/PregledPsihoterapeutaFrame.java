@@ -5,8 +5,6 @@ import savetovaliste.dao.PsihoKandDao;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class PregledPsihoterapeutaFrame extends JFrame {
@@ -67,6 +65,7 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         ImageIcon prijavaIkona = new ImageIcon("src/main/resources/login.png");
         ImageIcon registracijaIkona = new ImageIcon("src/main/resources/signup.png");
         ImageIcon obrisiIkona = new ImageIcon("src/main/resources/delete.png");
+        ImageIcon odaberiPsihIkona = new ImageIcon("src/main/resources/odaberiPsih.png");
 
         JButton prijavaBtn = new JButton("Prijava", prijavaIkona);
         prijavaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -79,7 +78,35 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         registracijaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         registracijaBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         registracijaBtn.addActionListener(e -> {
-            new RegistracijaFrame(this).setVisible(true);
+            String jmbgInput = JOptionPane.showInputDialog(this, "Unesite svoj JMBG:");
+            if (jmbgInput != null && jmbgInput.matches("\\d{13}")) {
+                new RegistracijaFrame(this, jmbgInput).setVisible(true);
+            } else if (jmbgInput != null) {
+                JOptionPane.showMessageDialog(this, "Unesite validan JMBG (13 cifara).");
+            }
+        });
+
+        JButton izaberiPsihoterapeutaBtn = new JButton("Odaberite svog", odaberiPsihIkona);
+        izaberiPsihoterapeutaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        izaberiPsihoterapeutaBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        izaberiPsihoterapeutaBtn.addActionListener(e -> {
+            int red = table.getSelectedRow();
+            if (red == -1) {
+                JOptionPane.showMessageDialog(this, "Selektujte psihoterapeuta iz tabele.");
+                return;
+            }
+
+            String email = tableModel.getValueAt(red, 4).toString();
+
+
+            PsihoKandDao dao = new PsihoKandDao();
+            PsihoterapeutKandidat kandidat = dao.nadjiPoEmailu(email);
+
+            if (kandidat != null) {
+                new UpitnikFrame(kandidat); // otvaraš upitnik za selektovanog terapeuta
+            } else {
+                JOptionPane.showMessageDialog(this, "Greška: nije moguće naći terapeuta po mejlu.");
+            }
         });
 
         JButton obrisiBtn = new JButton("Obriši kandidata", obrisiIkona);
@@ -90,14 +117,16 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         JPanel dugmiciPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 10));
         dugmiciPanel.setBackground(new Color(172, 230, 180));
 
-        Dimension dugmeDimenzije = new Dimension(110, 80); // širina, visina
+        Dimension dugmeDimenzije = new Dimension(130, 80); // širina, visina
         prijavaBtn.setPreferredSize(dugmeDimenzije);
         registracijaBtn.setPreferredSize(dugmeDimenzije);
         obrisiBtn.setPreferredSize(dugmeDimenzije);
+        izaberiPsihoterapeutaBtn.setPreferredSize(dugmeDimenzije);
 
         dugmiciPanel.add(prijavaBtn);
         dugmiciPanel.add(registracijaBtn);
         dugmiciPanel.add(obrisiBtn);
+        dugmiciPanel.add(izaberiPsihoterapeutaBtn);
 
         add(dugmiciPanel, BorderLayout.SOUTH);
     }
@@ -132,18 +161,12 @@ public class PregledPsihoterapeutaFrame extends JFrame {
             return;
         }
 
-        String email = tableModel.getValueAt(selektovaniRed, 4).toString(); // Kolona 4 je email
-        String jmbg = JOptionPane.showInputDialog(this, "Unesite JMBG kandidata radi potvrde:");
-
-        if (jmbg == null || jmbg.trim().isEmpty()) {
-            return;  // Otkaže unos
-        }
-
+        String email = tableModel.getValueAt(selektovaniRed, 4).toString(); // 4 = kolona za email
         int potvrda = JOptionPane.showConfirmDialog(this, "Da li ste sigurni da želite da obrišete kandidata?", "Potvrda", JOptionPane.YES_NO_OPTION);
 
         if (potvrda == JOptionPane.YES_OPTION) {
             PsihoKandDao dao = new PsihoKandDao();
-            dao.obrisiKandidata(jmbg);
+            dao.obrisiKandidataPoEmailu(email);
             JOptionPane.showMessageDialog(this, "Kandidat je obrisan.");
             osveziTabelu();
         }
