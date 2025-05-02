@@ -3,33 +3,32 @@ package savetovaliste.dao;
 import savetovaliste.model.Univerzitet;
 import savetovaliste.utility.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UniverzitetDao {
 
+    // U ovoj klasi koristi Statement jer je upit neparametrizovan:
     public List<Univerzitet> getSviUniverziteti() {
         List<Univerzitet> lista = new ArrayList<>();
+        String query = "SELECT univerzitet_id, naziv FROM univerzitet ORDER BY naziv ASC";
 
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT univerzitet_id, naziv FROM univerzitet")) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
-            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Univerzitet u = new Univerzitet();
-                u.setId(rs.getInt("univerzitet_id"));
-                u.setNaziv(rs.getString("naziv"));
-                lista.add(u);
+                lista.add(new Univerzitet(
+                        rs.getInt("univerzitet_id"),
+                        rs.getString("naziv")
+                ));
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return lista;
     }
-
 }

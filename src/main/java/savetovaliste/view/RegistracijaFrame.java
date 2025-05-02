@@ -1,15 +1,15 @@
 package savetovaliste.view;
 
 import com.toedter.calendar.JDateChooser;
+import savetovaliste.dao.*;
 import savetovaliste.model.Fakultet;
+import savetovaliste.model.OblastPsihoterapije;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.model.Univerzitet;
-import savetovaliste.dao.FakultetDao;
-import savetovaliste.dao.PsihoKandDao;
-import savetovaliste.dao.UniverzitetDao;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Date;
 import java.util.List;
 
 public class RegistracijaFrame extends JFrame{
@@ -24,11 +24,16 @@ public class RegistracijaFrame extends JFrame{
     private JComboBox<Univerzitet> cbUniverziteti = new JComboBox<>();
     private JComboBox<Fakultet> cbFakulteti = new JComboBox<>();
     private JComboBox<String> cbStepeni = new JComboBox<>();
+    private JDateChooser datumSertifikacijeChooser = new JDateChooser();
+    private JComboBox<OblastPsihoterapije> cbOblasti = new JComboBox<>();
+
+    private String pocetniJmbg;
 
     private PregledPsihoterapeutaFrame parentFrame;
 
-    public RegistracijaFrame(PregledPsihoterapeutaFrame parentFrame) {
+    public RegistracijaFrame(PregledPsihoterapeutaFrame parentFrame, String pocetniJmbg) {
         this.parentFrame = parentFrame;
+        this.pocetniJmbg = pocetniJmbg;
         setTitle("Registracija psihoterapeuta");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(600, 550);
@@ -86,6 +91,13 @@ public class RegistracijaFrame extends JFrame{
         gbc.gridx = 0; gbc.gridy = ++y;
         add(new JLabel("Univerzitet:"), gbc);
         gbc.gridx = 1;
+        cbUniverziteti.addActionListener(e -> {
+            Univerzitet izabrani = (Univerzitet) cbUniverziteti.getSelectedItem();
+            if (izabrani != null) {
+                ucitajFakultetePoUniverzitetu(izabrani.getId());
+            }
+        });
+
         add(cbUniverziteti, gbc);
 
         gbc.gridx = 0; gbc.gridy = ++y;
@@ -97,6 +109,19 @@ public class RegistracijaFrame extends JFrame{
         add(new JLabel("Stepen studija:"), gbc);
         gbc.gridx = 1;
         add(cbStepeni, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y;
+        add(new JLabel("Datum sertifikacije:"), gbc);
+        gbc.gridx = 1;
+        datumSertifikacijeChooser.setDateFormatString("yyyy-MM-dd");
+        add(datumSertifikacijeChooser, gbc);
+
+        gbc.gridx = 0; gbc.gridy = ++y;
+        add(new JLabel("Oblast psihoterapije:"), gbc);
+        gbc.gridx = 1;
+        add(cbOblasti, gbc);
+
+
 
         // Dugme na sredini
         JButton btnRegistruj = new JButton("Registruj");
@@ -112,6 +137,9 @@ public class RegistracijaFrame extends JFrame{
         ucitajUniverzitete();
         ucitajFakultete();
         ucitajStepene();
+        ucitajOblastiPsihoterapije();
+
+        popuniAkoPostojiSupervizija(); // ← ovo dodaj
 
         setVisible(true);
     }
@@ -119,6 +147,7 @@ public class RegistracijaFrame extends JFrame{
 
     private void ucitajUniverzitete() {
         cbUniverziteti.removeAllItems();
+        cbUniverziteti.addItem(new Univerzitet(0,"-- Univerziteti --"));
         List<Univerzitet> univerziteti = new UniverzitetDao().getSviUniverziteti();
         for (Univerzitet u : univerziteti) {
             cbUniverziteti.addItem(u);
@@ -129,7 +158,7 @@ public class RegistracijaFrame extends JFrame{
 
     private void ucitajFakultete() {
         cbFakulteti.removeAllItems();
-        cbFakulteti.addItem(new Fakultet(0, "-- izaberite fakultet --"));
+        cbFakulteti.addItem(new Fakultet(0, "-- Fakulteti --"));
 
         List<Fakultet> fakulteti = new FakultetDao().getSviFakulteti();
         for (Fakultet f : fakulteti) {
@@ -137,13 +166,32 @@ public class RegistracijaFrame extends JFrame{
         }
     }
 
-
+    private void ucitajFakultetePoUniverzitetu(int univerzitetId) {
+        cbFakulteti.removeAllItems();
+        cbFakulteti.addItem(new Fakultet(0, "-- izaberite fakultet --"));
+        List<Fakultet> fakulteti = new FakultetDao().getFakultetiPoUniverzitetu(univerzitetId);
+        for (Fakultet f : fakulteti) {
+            cbFakulteti.addItem(f);
+        }
+    }
 
     private void ucitajStepene() {
-        cbStepeni.addItem("BSc");
-        cbStepeni.addItem("MSc");
-        cbStepeni.addItem("PhD");
+        cbStepeni.removeAllItems();
+        List<String> stepeni = new StepenDao().getSviStepeni();
+        for (String s : stepeni) {
+            cbStepeni.addItem(s);
+        }
     }
+
+    private void ucitajOblastiPsihoterapije() {
+        cbOblasti.removeAllItems();
+        List<OblastPsihoterapije> oblasti = new OblastPsihoterapijeDao().getSveOblasti(); // napravi DAO ako nemaš
+        for (OblastPsihoterapije o : oblasti) {
+            cbOblasti.addItem(o);
+        }
+    }
+
+
 
     private void registruj() {
         try {
@@ -169,7 +217,7 @@ public class RegistracijaFrame extends JFrame{
             }
 
             if (jmbgText.isEmpty() || !jmbgText.matches("\\d{13}")) {
-                JOptionPane.showMessageDialog(this, "Unesite ispravan JMBG (13 cifara).");
+                JOptionPane.showMessageDialog(this, "Unesite ispravan JMBG.");
                 return;
             }
 
@@ -240,10 +288,40 @@ public class RegistracijaFrame extends JFrame{
             PsihoKandDao psiho = new PsihoKandDao();
 
             if (psiho.registrujKandidata(k)) {
-                psiho.postaviRegistrovan(jmbgText);  // <--- OVDE DODAJEŠ
+                psiho.postaviRegistrovan(jmbgText);
+
+                int id = psiho.getIdPoJmbg(Long.parseLong(jmbgText));  // Dodaj ovu metodu u DAO ako ne postoji
+
+
                 JOptionPane.showMessageDialog(this, "Uspešna registracija!");
 
-                // ✨ Osveži tabelu u glavnom prozoru
+
+                java.util.Date datumSert = datumSertifikacijeChooser.getDate();
+
+                if (datumSert == null) {
+                    JOptionPane.showMessageDialog(this, "Morate izabrati datum sertifikacije.");
+                    return;
+                }
+
+                java.sql.Date sqlDatumSert = new java.sql.Date(datumSert.getTime());
+
+
+
+                OblastPsihoterapije izabranaOblast = (OblastPsihoterapije) cbOblasti.getSelectedItem();
+
+                if (datumSert == null || izabranaOblast == null) {
+                    JOptionPane.showMessageDialog(this, "Morate uneti datum sertifikacije i oblast.");
+                    return;
+                }
+
+                psiho.dodajSertifikat(
+                        id,
+                        izabranaOblast.getOblastPsihoteraoijeId(),
+                        sqlDatumSert
+                );
+
+
+                //  Osveži tabelu u glavnom prozoru
                 if (parentFrame != null) {
                     parentFrame.osveziTabelu();
                 }
@@ -256,6 +334,47 @@ public class RegistracijaFrame extends JFrame{
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Greška prilikom registracije.");
             ex.printStackTrace();
+        }
+    }
+
+    private void popuniAkoPostojiSupervizija() {
+        if (pocetniJmbg == null) return;
+
+        tfJmbg.setText(pocetniJmbg);
+        tfJmbg.setEditable(false);
+
+        PsihoterapeutKandidat gotovKandidat = new PsihoKandDao().getKandidatAkoImaZavrsenuSuperviziju(pocetniJmbg);
+
+        if (gotovKandidat != null) {
+            tfIme.setText(gotovKandidat.getIme());
+            tfPrezime.setText(gotovKandidat.getPrezime());
+            tfTelefon.setText(gotovKandidat.getTelefon());
+            tfEmail.setText(gotovKandidat.getEmail());
+            tfPrebivaliste.setText(gotovKandidat.getPrebivaliste());
+            datumRodjenjaChooser.setDate(gotovKandidat.getDatumRodjenja());
+
+            int fakultetId = gotovKandidat.getFakultetId();
+            int univerzitetId = new FakultetDao().getUniverzitetIdZaFakultet(fakultetId);
+
+            // Postavi univerzitet (poziva se automatski ucitajFakultetePoUniverzitetu)
+            for (int i = 0; i < cbUniverziteti.getItemCount(); i++) {
+                Univerzitet u = cbUniverziteti.getItemAt(i);
+                if (u.getId() == univerzitetId) {
+                    cbUniverziteti.setSelectedIndex(i);
+                    break;
+                }
+            }
+
+            // fakultet
+            for (int i = 0; i < cbFakulteti.getItemCount(); i++) {
+                Fakultet f = cbFakulteti.getItemAt(i);
+                if (f.getFakultetId() == gotovKandidat.getFakultetId()) {
+                    cbFakulteti.setSelectedIndex(i);
+                    break;
+                }
+            }
+
+            cbStepeni.setSelectedItem(gotovKandidat.getStepenId());
         }
     }
 

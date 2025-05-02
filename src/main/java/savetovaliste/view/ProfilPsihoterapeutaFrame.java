@@ -73,6 +73,29 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         btnKlijenti.addActionListener(e -> cardLayout.show(desniPanel, "Klijenti"));
     }
 
+//    private JPanel napraviProfilPanel() {
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+//
+//        JLabel naslov = new JLabel("Informacije o psihoterapeutu");
+//        naslov.setFont(new Font("SansSerif", Font.BOLD, 22));
+//        naslov.setAlignmentX(Component.CENTER_ALIGNMENT);
+//
+//        panel.add(naslov);
+//        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+//
+//        panel.add(new JLabel("Ime: " + psihoterapeut.getIme()));
+//        panel.add(new JLabel("Prezime: " + psihoterapeut.getPrezime()));
+//        panel.add(new JLabel("Datum rođenja: " + psihoterapeut.getDatumRodjenja()));
+//        panel.add(new JLabel("Telefon: " + psihoterapeut.getTelefon()));
+//        panel.add(new JLabel("Email: " + psihoterapeut.getEmail()));
+//        panel.add(new JLabel("Fakultet: " + psihoterapeut.getFakultetNaziv()));
+//        panel.add(new JLabel("Stepen studija: " + psihoterapeut.getStepenNaziv()));
+//
+//        return panel;
+//    }
+
     private JPanel napraviProfilPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -85,13 +108,21 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         panel.add(naslov);
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
+        panel.add(new JLabel("ID: " + psihoterapeut.getPsihoterapeutId()));
         panel.add(new JLabel("Ime: " + psihoterapeut.getIme()));
         panel.add(new JLabel("Prezime: " + psihoterapeut.getPrezime()));
         panel.add(new JLabel("Datum rođenja: " + psihoterapeut.getDatumRodjenja()));
         panel.add(new JLabel("Telefon: " + psihoterapeut.getTelefon()));
+        panel.add(new JLabel("Prebivalište: " + psihoterapeut.getPrebivaliste()));
         panel.add(new JLabel("Email: " + psihoterapeut.getEmail()));
+        panel.add(new JLabel("Lozinka: " + psihoterapeut.getLozinka()));
         panel.add(new JLabel("Fakultet: " + psihoterapeut.getFakultetNaziv()));
         panel.add(new JLabel("Stepen studija: " + psihoterapeut.getStepenNaziv()));
+
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        panel.add(new JLabel("Sertifikat:"));
+        panel.add(new JLabel("Datum sertifikacije: " + psihoterapeut.getDatumSertifikacije()));
+        panel.add(new JLabel("Oblast: " + psihoterapeut.getOblastNaziv()));
 
         return panel;
     }
