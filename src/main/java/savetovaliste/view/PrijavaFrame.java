@@ -12,7 +12,11 @@ public class PrijavaFrame extends JFrame {
     private JPasswordField lozinkaField;
     private JButton prijavaBtn;
 
-    public PrijavaFrame() {
+    private JFrame roditelj;
+
+
+    public PrijavaFrame(JFrame roditelj) {
+        this.roditelj = roditelj;
 
         setTitle("Prijava psihoterapeuta");
         setSize(400, 250);
@@ -54,6 +58,7 @@ public class PrijavaFrame extends JFrame {
         panel.add(prijavaBtn, gbc);
 
         add(panel);
+        getRootPane().setDefaultButton(prijavaBtn);
 
         prijavaBtn.addActionListener(e -> prijava());
     }
@@ -75,9 +80,11 @@ public class PrijavaFrame extends JFrame {
         if(psihoterapeut==null){
             JOptionPane.showMessageDialog(this,"Došlo je do greške\nProverite da li ste registrovani\ni da li ste uneli tačne podatke","Greška",JOptionPane.ERROR_MESSAGE);
         }
-        else{
-            new ProfilPsihoterapeutaFrame(psihoterapeut).setVisible(true);
+        else {
+            ProfilPsihoterapeutaFrame profil = new ProfilPsihoterapeutaFrame(psihoterapeut, roditelj);
+            profil.setVisible(true);
+            roditelj.setVisible(false); // sakrij glavni prozor
+            dispose(); // zatvori prijavu
         }
-
     }
 }

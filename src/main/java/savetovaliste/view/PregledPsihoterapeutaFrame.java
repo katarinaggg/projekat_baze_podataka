@@ -71,7 +71,7 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         prijavaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         prijavaBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         prijavaBtn.addActionListener(e -> {
-           new PrijavaFrame().setVisible(true);
+           new PrijavaFrame(this).setVisible(true);
         });
 
         JButton registracijaBtn = new JButton("Registracija", registracijaIkona);
