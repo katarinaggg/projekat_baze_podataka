@@ -4,6 +4,8 @@ import savetovaliste.model.PsihoterapeutKandidat;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ProfilPsihoterapeutaFrame extends JFrame {
 
@@ -11,8 +13,12 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
     private JPanel desniPanel;
     private PsihoterapeutKandidat psihoterapeut;
 
-    public ProfilPsihoterapeutaFrame(PsihoterapeutKandidat psihoterapeut) {
+    private JFrame roditelj;
+
+
+    public ProfilPsihoterapeutaFrame(PsihoterapeutKandidat psihoterapeut, JFrame roditelj) {
         this.psihoterapeut = psihoterapeut;
+        this.roditelj = roditelj;
 
         setTitle("Profil psihoterapeuta - " + psihoterapeut.getIme() + " " + psihoterapeut.getPrezime());
         setSize(1100, 650);
@@ -27,22 +33,47 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         leviPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
         JButton btnProfil = new JButton("Profil");
-        JButton btnSeanse = new JButton("Seanse");
-        JButton btnPlacanja = new JButton("Plaćanja");
-        JButton btnKlijenti = new JButton("Klijenti");
+        JButton btnNoviKlijenti = new JButton("Novi klijenti");
+        JButton btnSviKlijenti = new JButton("Svi klijenti");
+        JButton btnOdrzaneSeanse = new JButton("Odrzane seanse");
+        JButton btnBuduceSeanse = new JButton("Termini buducih seansi");
 
         btnProfil.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnSeanse.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnPlacanja.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnKlijenti.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnNoviKlijenti.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnSviKlijenti.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnOdrzaneSeanse.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnBuduceSeanse.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         leviPanel.add(btnProfil);
         leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        leviPanel.add(btnSeanse);
+        leviPanel.add(btnNoviKlijenti);
         leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        leviPanel.add(btnPlacanja);
+        leviPanel.add(btnSviKlijenti);
         leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-        leviPanel.add(btnKlijenti);
+        leviPanel.add(btnOdrzaneSeanse);
+        leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        leviPanel.add(btnBuduceSeanse);
+
+        JButton btnOdjava = new JButton("Odjavi se");
+        btnOdjava.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leviPanel.add(Box.createVerticalGlue()); // Gura dugme na dno
+        leviPanel.add(btnOdjava);
+
+        btnOdjava.addActionListener(e -> {
+            int izbor = JOptionPane.showConfirmDialog(
+                    this,
+                    "Da li ste sigurni da želite da se odjavite?",
+                    "Potvrda odjave",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (izbor == JOptionPane.YES_OPTION) {
+                dispose();
+                if (roditelj != null) {
+                    roditelj.setVisible(true);
+                }
+            }
+        });
+
 
         add(leviPanel, BorderLayout.WEST);
 
@@ -51,26 +82,31 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         cardLayout = new CardLayout();
         desniPanel.setLayout(cardLayout);
 
-        JPanel profilPanel = napraviProfilPanel();
-        JPanel placeholderSeanse = new JPanel();
-        placeholderSeanse.add(new JLabel("Seanse - uskoro"));
-        JPanel placeholderPlacanja = new JPanel();
-        placeholderPlacanja.add(new JLabel("Plaćanja - uskoro"));
-        JPanel placeholderKlijenti = new JPanel();
-        placeholderKlijenti.add(new JLabel("Klijenti - uskoro"));
 
-        desniPanel.add(profilPanel, "Profil");
-        desniPanel.add(placeholderSeanse, "Seanse");
-        desniPanel.add(placeholderPlacanja, "Placanja");
-        desniPanel.add(placeholderKlijenti, "Klijenti");
+        desniPanel.add(new ProfilPanel(psihoterapeut), "Profil");
+        desniPanel.add(new PrijaveNovihKlijenataPanel(psihoterapeut), "Prijave novih klijenata");
+        desniPanel.add(new SviKlijentiPanel(psihoterapeut), "Svi klijenti");
+        desniPanel.add(new OdrzaneSeansePanel(psihoterapeut), "Odrzane seanse");
+        desniPanel.add(new BuduceSeansePanel(), "Termini buducih seansi");
 
         add(desniPanel, BorderLayout.CENTER);
 
         // Dugmići za menjanje panela
         btnProfil.addActionListener(e -> cardLayout.show(desniPanel, "Profil"));
-        btnSeanse.addActionListener(e -> cardLayout.show(desniPanel, "Seanse"));
-        btnPlacanja.addActionListener(e -> cardLayout.show(desniPanel, "Placanja"));
-        btnKlijenti.addActionListener(e -> cardLayout.show(desniPanel, "Klijenti"));
+        btnNoviKlijenti.addActionListener(e -> cardLayout.show(desniPanel, "Prijave novih klijenata"));
+        btnSviKlijenti.addActionListener(e -> cardLayout.show(desniPanel, "Svi klijenti"));
+        btnOdrzaneSeanse.addActionListener(e -> cardLayout.show(desniPanel, "Odrzane seanse"));
+        btnBuduceSeanse.addActionListener(e -> cardLayout.show(desniPanel, "Termini buducih seansi"));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (roditelj != null) {
+                    roditelj.setVisible(true);
+                }
+            }
+        });
+
     }
 
 //    private JPanel napraviProfilPanel() {
@@ -96,34 +132,4 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
 //        return panel;
 //    }
 
-    private JPanel napraviProfilPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel naslov = new JLabel("Informacije o psihoterapeutu");
-        naslov.setFont(new Font("SansSerif", Font.BOLD, 22));
-        naslov.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        panel.add(naslov);
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        panel.add(new JLabel("ID: " + psihoterapeut.getPsihoterapeutId()));
-        panel.add(new JLabel("Ime: " + psihoterapeut.getIme()));
-        panel.add(new JLabel("Prezime: " + psihoterapeut.getPrezime()));
-        panel.add(new JLabel("Datum rođenja: " + psihoterapeut.getDatumRodjenja()));
-        panel.add(new JLabel("Telefon: " + psihoterapeut.getTelefon()));
-        panel.add(new JLabel("Prebivalište: " + psihoterapeut.getPrebivaliste()));
-        panel.add(new JLabel("Email: " + psihoterapeut.getEmail()));
-        panel.add(new JLabel("Lozinka: " + psihoterapeut.getLozinka()));
-        panel.add(new JLabel("Fakultet: " + psihoterapeut.getFakultetNaziv()));
-        panel.add(new JLabel("Stepen studija: " + psihoterapeut.getStepenNaziv()));
-
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-        panel.add(new JLabel("Sertifikat:"));
-        panel.add(new JLabel("Datum sertifikacije: " + psihoterapeut.getDatumSertifikacije()));
-        panel.add(new JLabel("Oblast: " + psihoterapeut.getOblastNaziv()));
-
-        return panel;
-    }
 }

@@ -23,7 +23,7 @@ public class UpitnikFrame extends JFrame {
         JTextField tfPrezime = new JTextField();
         JDateChooser datumChooser = new JDateChooser();
         datumChooser.setDateFormatString("yyyy-MM-dd");
-        JComboBox<String> cbPol = new JComboBox<>(new String[]{"Muški", "Ženski", "Drugo"});
+        JComboBox<String> cbPol = new JComboBox<>(new String[]{"Muški", "Ženski"});
         JTextField tfEmail = new JTextField();
         JTextField tfTelefon = new JTextField();
         JCheckBox cbIsaoRanije = new JCheckBox("Već je išao kod psihoterapeuta");
@@ -43,9 +43,12 @@ public class UpitnikFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Prijava uspešno poslata. Prva seansa je besplatna.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
         });
 
-        btnPosalji.setPreferredSize(new Dimension(90, 30)); // širina 150px, visina 30px
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(btnPosalji);
         add(panel, BorderLayout.CENTER);
-        add(btnPosalji, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
+
 
         setVisible(true);
     }
