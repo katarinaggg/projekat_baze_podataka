@@ -85,7 +85,7 @@ public class SeansaDao {
         return lista;
     }
 
-
+/*
     public boolean unesiSeansuProcedura(Seansa seansa) {
         String sql = "{CALL dodaj_seansu(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
@@ -111,7 +111,7 @@ public class SeansaDao {
             return false;
         }
     }
-
+*/
 
     public List<Seansa> vratiOdrzaneSeanse(int psihoterapeutId) {
         List<Seansa> lista = new ArrayList<>();
@@ -121,7 +121,7 @@ public class SeansaDao {
         FROM seansa s
         JOIN klijent k ON s.klijent_id = k.klijent_id
         WHERE s.psihoterapeut_kandidat_id = ?
-        AND (s.dan < CURDATE() OR (s.dan = CURDATE() AND s.vreme < CURTIME()))
+        AND s.odrzana = TRUE
         ORDER BY s.dan DESC, s.vreme DESC
     """;
 
@@ -153,5 +153,128 @@ public class SeansaDao {
         }
 
         return lista;
+    }
+
+    public boolean zakaziSeansu(int klijentId, int psihoterapeutId, Date datum, Time vreme) {
+        String sql = "{CALL zakazi_seansu(?, ?, ?, ?)}";
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setDate(1, new java.sql.Date(datum.getTime()));
+            stmt.setTime(2, vreme);
+            stmt.setInt(3, klijentId);
+            stmt.setInt(4, psihoterapeutId);
+
+            return stmt.executeUpdate() == 1;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Seansa> vratiBuduceSeanse(int psihoterapeutId) {
+        List<Seansa> lista = new ArrayList<>();
+        String sql = "SELECT s.seansa_id, s.dan, s.vreme, s.klijent_id, k.ime, k.prezime " +
+                    "FROM seansa s " +
+                    "JOIN klijent k ON s.klijent_id = k.klijent_id " +
+                    "WHERE s.psihoterapeut_kandidat_id = ? AND s.odrzana = FALSE AND s.dan >= CURDATE() " +
+                    "ORDER BY s.dan, s.vreme";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, psihoterapeutId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Seansa s = new Seansa();
+                s.setSeansaId(rs.getInt("seansa_id"));
+                s.setDatum(rs.getDate("dan"));
+                s.setVreme(rs.getTime("vreme"));
+                s.setKlijentId(rs.getInt("klijent_id"));
+                s.setKlijentIme(rs.getString("ime"));
+                s.setKlijentPrezime(rs.getString("prezime"));
+                lista.add(s);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public boolean postojiZakazanaSeansa(int psihoterapeutId, Date datum, Time vreme) {
+        String sql = "SELECT COUNT(*) FROM seansa " +
+                "WHERE psihoterapeut_kandidat_id = ? AND dan = ? AND vreme = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, psihoterapeutId);
+            stmt.setDate(2, new java.sql.Date(datum.getTime()));
+            stmt.setTime(3, vreme);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Seansa nadjiSeansuPoId(int seansaId) {
+        String sql = "SELECT s.*, k.ime, k.prezime " +
+                "FROM seansa s " +
+                "JOIN klijent k ON s.klijent_id = k.klijent_id " +
+                "WHERE s.seansa_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, seansaId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Seansa s = new Seansa();
+                s.setSeansaId(seansaId);
+                s.setDatum(rs.getDate("dan"));
+                s.setVreme(rs.getTime("vreme"));
+                s.setKlijentId(rs.getInt("klijent_id"));
+                s.setKlijentIme(rs.getString("ime"));
+                s.setKlijentPrezime(rs.getString("prezime"));
+                s.setPihoterapeutId(rs.getInt("psihoterapeut_kandidat_id"));
+                return s;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public boolean oznaciSeansuKaoOdrzanu(Seansa s) {
+        String sql = "{CALL oznaci_seansu_kao_odrzanu(?, ?, ?, ?, ?, ?, ?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, s.getSeansaId());
+            stmt.setString(2, s.getBeleske());
+            stmt.setBigDecimal(3, s.getTrajanje());
+            stmt.setBoolean(4, s.isPlacanje());
+            stmt.setBoolean(5, s.isZlocin());
+            stmt.setBoolean(6, s.isNaSudu());
+            stmt.setInt(7, s.getCenaId());
+
+            stmt.execute();
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -82,12 +82,14 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         cardLayout = new CardLayout();
         desniPanel.setLayout(cardLayout);
 
+        OdrzaneSeansePanel odrzaneSeansePanel = new OdrzaneSeansePanel(psihoterapeut);
+        BuduceSeansePanel buduceSeansePanel= new BuduceSeansePanel(psihoterapeut, odrzaneSeansePanel);
 
         desniPanel.add(new ProfilPanel(psihoterapeut), "Profil");
         desniPanel.add(new PrijaveNovihKlijenataPanel(psihoterapeut), "Prijave novih klijenata");
-        desniPanel.add(new SviKlijentiPanel(psihoterapeut), "Svi klijenti");
-        desniPanel.add(new OdrzaneSeansePanel(psihoterapeut), "Odrzane seanse");
-        desniPanel.add(new BuduceSeansePanel(), "Termini buducih seansi");
+        desniPanel.add(new SviKlijentiPanel(psihoterapeut, buduceSeansePanel), "Svi klijenti");
+        desniPanel.add(odrzaneSeansePanel, "Odrzane seanse");
+        desniPanel.add(buduceSeansePanel, "Termini buducih seansi");
 
         add(desniPanel, BorderLayout.CENTER);
 

@@ -16,8 +16,13 @@ public class SviKlijentiPanel extends JPanel {
     private JTable tabela;
     private DefaultTableModel model;
 
-    public SviKlijentiPanel(PsihoterapeutKandidat psihoterapeut) {
+    // treba nam da bi ga azurirali kada zakazemo novu seansu
+    // (da bi se automatski dodala u tom panelu)
+    private BuduceSeansePanel buduceSeansePanel;
+
+    public SviKlijentiPanel(PsihoterapeutKandidat psihoterapeut, BuduceSeansePanel buduceSeansePanel) {
         this.psihoterapeut = psihoterapeut;
+        this.buduceSeansePanel = buduceSeansePanel;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -42,8 +47,8 @@ public class SviKlijentiPanel extends JPanel {
 
         popuniTabelu(psihoterapeut);
 
-        JButton dodajSeansuBtn = new JButton("Dodaj seansu");
-        dodajSeansuBtn.addActionListener(e -> {
+        JButton zakaziSeansuBtn = new JButton("Zakaži seansu");
+        zakaziSeansuBtn.addActionListener(e -> {
             int selectedRow = tabela.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Morate selektovati klijenta iz tabele.", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -55,13 +60,15 @@ public class SviKlijentiPanel extends JPanel {
             Klijent selektovani = klijentDao.nadjiKlijentaPoEmailu(email);
 
             if (selektovani != null) {
-                new NovaSeansaFrame(selektovani, psihoterapeut).setVisible(true);
+                new ZakaziSeansuFrame(selektovani, psihoterapeut, buduceSeansePanel).setVisible(true);
             }
         });
 
-        JPanel dugmePanel = new JPanel();
-        dugmePanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // centriraj
-        dugmePanel.add(dodajSeansuBtn);
+        JPanel dugmePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        dugmePanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+        zakaziSeansuBtn.setPreferredSize(new Dimension(200, 40));
+        zakaziSeansuBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        dugmePanel.add(zakaziSeansuBtn);
         add(dugmePanel, BorderLayout.SOUTH);
 
 

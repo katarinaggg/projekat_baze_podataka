@@ -14,7 +14,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class NovaSeansaFrame extends JFrame {
+public class OdrziSeansuFrame extends JFrame {
 
     private JDateChooser dateChooser;
     private JSpinner timeSpinner;
@@ -24,14 +24,23 @@ public class NovaSeansaFrame extends JFrame {
     private JCheckBox zlocinCheck;
     private JCheckBox naSuduCheck;
 
-    private Klijent klijent;
-    private PsihoterapeutKandidat psihoterapeutKandidat;
+    // treba nam panel da ga osvezimo kada odrzimo neku seansu
+    // ona se vise nece prikazivati na tom panelu buducih
+    private BuduceSeansePanel buduceSeansePanel;
 
-    public NovaSeansaFrame(Klijent klijent, PsihoterapeutKandidat psihoterapeutKandidat) {
-        this.klijent = klijent;
-        this.psihoterapeutKandidat = psihoterapeutKandidat;
+    // treba nam i panel s odrzanim seansama da bi
+    // ga osvezili kada dodamo ovu novu
+    private OdrzaneSeansePanel odrzaneSeansePanel;
 
-        setTitle("Nova seansa");
+    private Seansa seansa;
+
+
+    public OdrziSeansuFrame(Seansa seansa, BuduceSeansePanel buduceSeansePanel, OdrzaneSeansePanel odrzaneSeansePanel) {
+        this.seansa = seansa;
+        this.buduceSeansePanel = buduceSeansePanel;
+        this.odrzaneSeansePanel = odrzaneSeansePanel;
+
+        setTitle("Unos detalja o seansi");
         setSize(500, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -45,7 +54,8 @@ public class NovaSeansaFrame extends JFrame {
         add(new JLabel("Datum:"), gbc);
         gbc.gridx = 1;
         dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("dd.MM.yyyy");
+        dateChooser.setDate(seansa.getDatum());
+        dateChooser.setEnabled(false);
         add(dateChooser, gbc);
 
         gbc.gridx = 0; gbc.gridy++;
@@ -55,6 +65,8 @@ public class NovaSeansaFrame extends JFrame {
         timeSpinner = new JSpinner(timeModel);
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
         timeSpinner.setEditor(timeEditor);
+        timeSpinner.setValue(seansa.getVreme());
+        timeSpinner.setEnabled(false);
         add(timeSpinner, gbc);
 
         gbc.gridx = 0; gbc.gridy++;
@@ -89,17 +101,15 @@ public class NovaSeansaFrame extends JFrame {
         add(sacuvajBtn, gbc);
 
         sacuvajBtn.addActionListener(e -> {
-            Date datum = dateChooser.getDate();
-            String vreme = new SimpleDateFormat("HH:mm:ss").format((Date) timeSpinner.getValue());
             String trajanjeStr = trajanjeField.getText();
             String beleske = beleškeArea.getText();
             boolean placanje = placanjeCheck.isSelected();
             boolean zlocin = zlocinCheck.isSelected();
             boolean naSudu = naSuduCheck.isSelected();
 
-            if (datum==null || vreme.isEmpty() || trajanjeStr.isEmpty() || beleske.isEmpty()){
+            if (trajanjeStr.isEmpty() || beleske.isEmpty()){
                 JOptionPane.showMessageDialog(
-                        NovaSeansaFrame.this,
+                        OdrziSeansuFrame.this,
                         "Molimo popunite sva polja.",
                         "Greška",
                         JOptionPane.ERROR_MESSAGE
@@ -107,24 +117,36 @@ public class NovaSeansaFrame extends JFrame {
                 return;
             }
 
-            int cenaId = new CenaDao().getTrenutnaCenaId();
-            if(cenaId == 0){
-                JOptionPane.showMessageDialog(NovaSeansaFrame.this, "Ne postoji podatak o ceni seanse", "Greska", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            try {
+                BigDecimal trajanje = new BigDecimal(trajanjeStr);
+                int cenaId = new CenaDao().getTrenutnaCenaId();
+                if (cenaId == 0) {
+                    JOptionPane.showMessageDialog(this, "Nema informacije o ceni.", "Greška", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-            try{
-                Seansa seansa = new Seansa(datum, Time.valueOf(vreme), beleske, new BigDecimal(trajanjeStr),placanje,zlocin,naSudu, klijent.getId(), cenaId,psihoterapeutKandidat.getPsihoterapeutId());
-                boolean uspeh = new SeansaDao().unesiSeansuProcedura(seansa);
+                seansa.setTrajanje(trajanje);
+                seansa.setBeleske(beleske);
+                seansa.setPlacanje(placanje);
+                seansa.setZlocin(zlocin);
+                seansa.setNaSudu(naSudu);
+                seansa.setCenaId(cenaId);
+
+                boolean uspeh = new SeansaDao().oznaciSeansuKaoOdrzanu(seansa);
                 if (uspeh) {
-                    JOptionPane.showMessageDialog(this, "Seansa uspešno sačuvana!");
+                    // iz ove izbacujemo
+                    buduceSeansePanel.osveziTabelu();
+                    // u ovu ubacujemo
+                    odrzaneSeansePanel.osveziTabelu();
+                    JOptionPane.showMessageDialog(this, "Seansa je uspešno uneta.");
                     dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Greška prilikom čuvanja seanse.");
+                    JOptionPane.showMessageDialog(this, "Greška pri čuvanju.", "Greška", JOptionPane.ERROR_MESSAGE);
                 }
 
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Greška prilikom obrade.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
 
         });
