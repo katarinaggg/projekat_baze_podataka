@@ -51,6 +51,8 @@ public class Seansa {
         this.pihoterapeutId = pihoterapeutId;
     }
 
+    public Seansa() {
+    }
 
     public int getSeansaId() {
         return seansaId;
