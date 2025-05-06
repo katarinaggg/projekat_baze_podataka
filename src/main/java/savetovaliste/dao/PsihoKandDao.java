@@ -147,7 +147,6 @@ public class PsihoKandDao {
             cs.setString(10, k.getStepenId());
 
             cs.execute();
-            cs.execute();
             return true;
 
         } catch (SQLException e) {

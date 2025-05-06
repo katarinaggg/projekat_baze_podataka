@@ -18,11 +18,9 @@ public class SviKlijentiPanel extends JPanel {
 
     // treba nam da bi ga azurirali kada zakazemo novu seansu
     // (da bi se automatski dodala u tom panelu)
-    private BuduceSeansePanel buduceSeansePanel;
 
     public SviKlijentiPanel(PsihoterapeutKandidat psihoterapeut, BuduceSeansePanel buduceSeansePanel) {
         this.psihoterapeut = psihoterapeut;
-        this.buduceSeansePanel = buduceSeansePanel;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -93,5 +91,8 @@ public class SviKlijentiPanel extends JPanel {
 
             });
         }
+    }
+    public void osveziTabelu() {
+        popuniTabelu(this.psihoterapeut);
     }
 }

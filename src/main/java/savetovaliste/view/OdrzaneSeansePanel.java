@@ -49,7 +49,7 @@ public class OdrzaneSeansePanel extends JPanel {
         for (Seansa s : lista) {
             model.addRow(new Object[]{
                     s.getDatum(), s.getVreme(), s.getKlijentImePrezime(),
-                    s.getBeleske(), s.getTrajanje(), s.isPlacanje() ? "Da" : "Ne"
+                    s.getBeleske(), s.getTrajanje(), s.getPlacanje() ? "Da" : "Ne"
             });
         }
     }
