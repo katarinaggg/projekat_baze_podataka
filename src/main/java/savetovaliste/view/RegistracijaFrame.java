@@ -113,7 +113,7 @@ public class RegistracijaFrame extends JFrame{
         gbc.gridx = 0; gbc.gridy = ++y;
         add(new JLabel("Datum sertifikacije:"), gbc);
         gbc.gridx = 1;
-        datumSertifikacijeChooser.setDateFormatString("yyyy-MM-dd");
+        datumSertifikacijeChooser.setDateFormatString("dd.MM.yyyy");
         add(datumSertifikacijeChooser, gbc);
 
         gbc.gridx = 0; gbc.gridy = ++y;

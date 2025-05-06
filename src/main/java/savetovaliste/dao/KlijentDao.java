@@ -40,4 +40,29 @@ public class KlijentDao {
 
         return klijent;
     }
+
+    public boolean dodajKlijenta(Klijent klijent) {
+        String sql = "{CALL dodaj_klijenta(?, ?, ?, ?, ?, ?, ?, ?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, klijent.getIme());
+            stmt.setString(2, klijent.getPrezime());
+            stmt.setDate(3, new java.sql.Date(klijent.getDatumRodjenja().getTime()));
+            stmt.setString(4, klijent.getEmail());
+            stmt.setString(5, klijent.getTelefon());
+            stmt.setBoolean(6, klijent.isPrviPut());
+            stmt.setString(7, klijent.getOpis());
+            stmt.setString(8, klijent.getPolId());
+
+            stmt.execute();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

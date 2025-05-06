@@ -13,6 +13,8 @@ public class PregledPsihoterapeutaFrame extends JFrame {
 
     private JTable table;
     private DefaultTableModel tableModel;
+    private SviKlijentiPanel sviKlijentiPanel;
+
 
     public PregledPsihoterapeutaFrame() {
         setTitle("Savetovalište 'Novi početak'");
@@ -97,8 +99,6 @@ public class PregledPsihoterapeutaFrame extends JFrame {
             }
 
             String email = tableModel.getValueAt(red, 4).toString();
-
-
             PsihoKandDao dao = new PsihoKandDao();
             PsihoterapeutKandidat kandidat = dao.nadjiPoEmailu(email);
 

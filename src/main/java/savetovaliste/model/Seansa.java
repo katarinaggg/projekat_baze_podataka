@@ -11,31 +11,38 @@ public class Seansa {
     private Time vreme;
     private String beleske;
     private BigDecimal trajanje;
-    private boolean placanje;
-    private boolean zlocin;
-    private boolean naSudu;
+    private Boolean placanje;          // može biti NULL u bazi
+    private Boolean zlocin;            // može biti NULL
+    private Boolean naSudu;            // može biti NULL
     private int klijentId;
     private String klijentIme;
     private String klijentPrezime;
-    private int cenaId;
-    private int pihoterapeutId;
+    private Integer cenaId;
+    private int psihoterapeutId;
+    private boolean odrzana;
 
-    public Seansa(Date datum, Time vreme, String beleske, BigDecimal trajanje, boolean placanje, boolean zlocin, boolean naSudu, int klijentId, int cenaId, int pihoterapeutId) {
+
+    public Seansa() {}
+
+    public Seansa(Date datum, Time vreme, String beleske, BigDecimal trajanje,
+                  Boolean placanje, boolean odrzana, Boolean zlocin, Boolean naSudu,
+                  int klijentId, Integer cenaId, int psihoterapeutId) {
         this.datum = datum;
         this.vreme = vreme;
         this.beleske = beleske;
         this.trajanje = trajanje;
         this.placanje = placanje;
+        this.odrzana = odrzana;
         this.zlocin = zlocin;
         this.naSudu = naSudu;
         this.klijentId = klijentId;
         this.cenaId = cenaId;
-        this.pihoterapeutId = pihoterapeutId;
+        this.psihoterapeutId = psihoterapeutId;
     }
 
-    public Seansa(int seansaId, Date datum, Time vreme, String beleske, BigDecimal trajanje, boolean placanje,
-                  boolean zlocin, boolean naSudu, int klijentId, String klijentIme, String klijentPrezime,
-                  int cenaId, int pihoterapeutId) {
+    public Seansa(int seansaId, Date datum, Time vreme, String beleske, BigDecimal trajanje,
+                  Boolean placanje, Boolean zlocin, Boolean naSudu, int klijentId,
+                  String klijentIme, String klijentPrezime, Integer cenaId, int psihoterapeutId) {
         this.seansaId = seansaId;
         this.datum = datum;
         this.vreme = vreme;
@@ -48,10 +55,7 @@ public class Seansa {
         this.klijentIme = klijentIme;
         this.klijentPrezime = klijentPrezime;
         this.cenaId = cenaId;
-        this.pihoterapeutId = pihoterapeutId;
-    }
-
-    public Seansa() {
+        this.psihoterapeutId = psihoterapeutId;
     }
 
     public int getSeansaId() {
@@ -94,27 +98,27 @@ public class Seansa {
         this.trajanje = trajanje;
     }
 
-    public boolean isPlacanje() {
+    public Boolean getPlacanje() {
         return placanje;
     }
 
-    public void setPlacanje(boolean placanje) {
+    public void setPlacanje(Boolean placanje) {
         this.placanje = placanje;
     }
 
-    public boolean isZlocin() {
+    public Boolean getZlocin() {
         return zlocin;
     }
 
-    public void setZlocin(boolean zlocin) {
+    public void setZlocin(Boolean zlocin) {
         this.zlocin = zlocin;
     }
 
-    public boolean isNaSudu() {
+    public Boolean getNaSudu() {
         return naSudu;
     }
 
-    public void setNaSudu(boolean naSudu) {
+    public void setNaSudu(Boolean naSudu) {
         this.naSudu = naSudu;
     }
 
@@ -142,20 +146,28 @@ public class Seansa {
         this.klijentPrezime = klijentPrezime;
     }
 
-    public int getCenaId() {
+    public Integer getCenaId() {
         return cenaId;
     }
 
-    public void setCenaId(int cenaId) {
+    public void setCenaId(Integer cenaId) {
         this.cenaId = cenaId;
     }
 
-    public int getPihoterapeutId() {
-        return pihoterapeutId;
+    public int getPsihoterapeutId() {
+        return psihoterapeutId;
     }
 
-    public void setPihoterapeutId(int pihoterapeutId) {
-        this.pihoterapeutId = pihoterapeutId;
+    public void setPsihoterapeutId(int pihoterapeutId) {
+        this.psihoterapeutId = pihoterapeutId;
+    }
+
+    public boolean isOdrzana() {
+        return odrzana;
+    }
+
+    public void setOdrzana(boolean odrzana) {
+        this.odrzana = odrzana;
     }
 
     public String getKlijentImePrezime() {
