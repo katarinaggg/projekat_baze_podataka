@@ -1,4 +1,4 @@
-package savetovaliste.view;
+package savetovaliste.view.psihoterapeut;
 
 import savetovaliste.dao.KlijentDao;
 import savetovaliste.dao.SeansaDao;

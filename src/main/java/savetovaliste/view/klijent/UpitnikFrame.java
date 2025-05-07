@@ -1,4 +1,4 @@
-package savetovaliste.view;
+package savetovaliste.view.klijent;
 
 import com.toedter.calendar.JDateChooser;
 import savetovaliste.dao.KlijentDao;
@@ -8,6 +8,7 @@ import savetovaliste.model.Klijent;
 import savetovaliste.model.Pol;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.model.Seansa;
+import savetovaliste.view.klijent.PrvaSeansaFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class UpitnikFrame extends JFrame {
         panel.add(lblDatum, gbc);
         gbc.gridx = 1;
         JDateChooser datumChooser = new JDateChooser();
-        datumChooser.setDateFormatString("yyyy-MM-dd");
+        datumChooser.setDateFormatString("dd. MM. yyyy");
         panel.add(datumChooser, gbc);
 
         gbc.gridy++; gbc.gridx = 0;
@@ -151,6 +152,78 @@ public class UpitnikFrame extends JFrame {
         btnPosalji.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 
+//        btnPosalji.addActionListener(e -> {
+//            // Provera da li su sva polja popunjena
+//            if (tfIme.getText().trim().isEmpty() ||
+//                    tfPrezime.getText().trim().isEmpty() ||
+//                    datumChooser.getDate() == null ||
+//                    tfEmail.getText().trim().isEmpty() ||
+//                    tfTelefon.getText().trim().isEmpty() ||
+//                    taProblem.getText().trim().isEmpty()) {
+//
+//                JOptionPane.showMessageDialog(this, "Sva polja moraju biti popunjena!", "Greška", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//
+//            // Provera formatiranja e-mail adrese (opciono)
+//            if (!tfEmail.getText().trim().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+//                JOptionPane.showMessageDialog(this, "Unesite ispravnu email adresu!", "Greška", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//
+//            KlijentDao dao = new KlijentDao();
+//
+//            String unetiEmail = tfEmail.getText().trim();
+//            if (dao.nadjiKlijentaPoEmailu(unetiEmail) != null) {
+//                JOptionPane.showMessageDialog(this, "Klijent sa ovom email adresom već postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//
+//            Klijent klijent = new Klijent();
+//            klijent.setIme(tfIme.getText().trim());
+//            klijent.setPrezime(tfPrezime.getText().trim());
+//            klijent.setDatumRodjenja(datumChooser.getDate());
+//            klijent.setEmail(unetiEmail);
+//            klijent.setTelefon(tfTelefon.getText().trim());
+//            // Ako je čekirano da je ranije išao, znači da nije prvi put, pa je logika obrnuta:
+//            klijent.setPrviPut(!cbIsaoRanije.isSelected());
+//            klijent.setOpis(taProblem.getText().trim());
+//            Pol izabraniPol = (Pol) cbPol.getSelectedItem();
+//            klijent.setPolId(izabraniPol.getId());  // 'M' ili 'Z'
+//            klijent.setPol(izabraniPol.getNaziv()); // 'Muški' ili 'Ženski'
+//
+//            boolean uspesno = dao.dodajKlijenta(klijent);
+//
+//            if (uspesno) {
+//                // odmah pronađi klijenta da dobiješ njegov ID
+//                Klijent noviKlijent = dao.nadjiKlijentaPoEmailu(klijent.getEmail());
+//
+//                Seansa prvaSeansa = new Seansa();
+//                prvaSeansa.setDatum(new java.util.Date());
+//                prvaSeansa.setVreme(new java.sql.Time(System.currentTimeMillis()));
+//                prvaSeansa.setTrajanje(new java.math.BigDecimal("1.0"));
+//                prvaSeansa.setPlacanje(false);
+//                prvaSeansa.setOdrzana(true);
+//                prvaSeansa.setBeleske("Prva besplatna seansa");
+//                prvaSeansa.setKlijentId(noviKlijent.getId());
+//                prvaSeansa.setPsihoterapeutId(kandidat.getPsihoterapeutId()); // koristiš kandidata koji je već prosleđen
+//                prvaSeansa.setCenaId(null); // jer je besplatna
+//
+//                boolean uspehSeansa = new SeansaDao().unesiSeansuProcedura(prvaSeansa);
+//
+//                if (uspehSeansa) {
+//                    JOptionPane.showMessageDialog(this, "Prijava uspešna.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
+//                    new PrvaSeansaFrame(noviKlijent, kandidat).setVisible(true);
+//                    this.dispose();
+//                } else {
+//                    JOptionPane.showMessageDialog(this, "Klijent dodat, ali došlo je do greške pri zakazivanju prve seanse.", "Greška", JOptionPane.ERROR_MESSAGE);
+//                }
+//            } else {
+//                JOptionPane.showMessageDialog(this, "Došlo je do greške pri dodavanju klijenta.", "Greška", JOptionPane.ERROR_MESSAGE);
+//            }
+//
+//        });
+
         btnPosalji.addActionListener(e -> {
             // Provera da li su sva polja popunjena
             if (tfIme.getText().trim().isEmpty() ||
@@ -184,44 +257,24 @@ public class UpitnikFrame extends JFrame {
             klijent.setDatumRodjenja(datumChooser.getDate());
             klijent.setEmail(unetiEmail);
             klijent.setTelefon(tfTelefon.getText().trim());
-            // Ako je čekirano da je ranije išao, znači da nije prvi put, pa je logika obrnuta:
             klijent.setPrviPut(!cbIsaoRanije.isSelected());
             klijent.setOpis(taProblem.getText().trim());
             Pol izabraniPol = (Pol) cbPol.getSelectedItem();
-            klijent.setPolId(izabraniPol.getId());  // 'M' ili 'Z'
-            klijent.setPol(izabraniPol.getNaziv()); // 'Muški' ili 'Ženski'
+            klijent.setPolId(izabraniPol.getId());
+            klijent.setPol(izabraniPol.getNaziv());
 
             boolean uspesno = dao.dodajKlijenta(klijent);
 
             if (uspesno) {
-                // odmah pronađi klijenta da dobiješ njegov ID
                 Klijent noviKlijent = dao.nadjiKlijentaPoEmailu(klijent.getEmail());
-
-                Seansa prvaSeansa = new Seansa();
-                prvaSeansa.setDatum(new java.util.Date());
-                prvaSeansa.setVreme(new java.sql.Time(System.currentTimeMillis()));
-                prvaSeansa.setTrajanje(new java.math.BigDecimal("1.0"));
-                prvaSeansa.setPlacanje(false);
-                prvaSeansa.setOdrzana(true);
-                prvaSeansa.setBeleske("Prva besplatna seansa");
-                prvaSeansa.setKlijentId(noviKlijent.getId());
-                prvaSeansa.setPsihoterapeutId(kandidat.getPsihoterapeutId()); // koristiš kandidata koji je već prosleđen
-                prvaSeansa.setCenaId(null); // jer je besplatna
-
-                boolean uspehSeansa = new SeansaDao().unesiSeansuProcedura(prvaSeansa);
-
-                if (uspehSeansa) {
-                    JOptionPane.showMessageDialog(this, "Prijava uspešna.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
-                    new PrvaSeansaFrame(noviKlijent, kandidat).setVisible(true);
-                    this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Klijent dodat, ali došlo je do greške pri zakazivanju prve seanse.", "Greška", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "Prijava uspešna. Unesite detalje prve seanse.", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
+                new PrvaSeansaFrame(noviKlijent, kandidat);
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Došlo je do greške pri dodavanju klijenta.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
-
         });
+
 
 
         JPanel bottomPanel = new JPanel();

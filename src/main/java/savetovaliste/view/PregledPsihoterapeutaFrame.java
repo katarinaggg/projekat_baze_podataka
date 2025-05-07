@@ -1,6 +1,8 @@
 package savetovaliste.view;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.dao.PsihoKandDao;
+import savetovaliste.view.klijent.UpitnikFrame;
+import savetovaliste.view.psihoterapeut.SviKlijentiPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

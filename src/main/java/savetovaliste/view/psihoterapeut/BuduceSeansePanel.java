@@ -1,4 +1,4 @@
-package savetovaliste.view;
+package savetovaliste.view.psihoterapeut;
 
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.model.PsihoterapeutKandidat;
@@ -7,7 +7,6 @@ import savetovaliste.model.Seansa;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class BuduceSeansePanel extends JPanel {
