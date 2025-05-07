@@ -2,6 +2,7 @@ package savetovaliste.view;
 
 import savetovaliste.dao.PsihoKandDao;
 import savetovaliste.model.PsihoterapeutKandidat;
+import savetovaliste.view.psihoterapeut.ProfilPsihoterapeutaFrame;
 
 import javax.swing.*;
 import java.awt.*;

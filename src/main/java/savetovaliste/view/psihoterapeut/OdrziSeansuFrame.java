@@ -1,18 +1,13 @@
-package savetovaliste.view;
+package savetovaliste.view.psihoterapeut;
 
 import com.toedter.calendar.JDateChooser;
 import savetovaliste.dao.CenaDao;
 import savetovaliste.dao.SeansaDao;
-import savetovaliste.model.Klijent;
-import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.model.Seansa;
 
 import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class OdrziSeansuFrame extends JFrame {
 

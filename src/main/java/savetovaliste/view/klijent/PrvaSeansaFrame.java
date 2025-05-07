@@ -1,4 +1,4 @@
-package savetovaliste.view;
+package savetovaliste.view.klijent;
 
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.model.Klijent;
@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -90,6 +89,11 @@ public class PrvaSeansaFrame extends JFrame {
                 seansa.setCenaId(null); // jer je besplatna
 
                 SeansaDao dao = new SeansaDao();
+                if (dao.postojiZakazanaSeansa(terapeut.getPsihoterapeutId(), datum, vreme)) {
+                    JOptionPane.showMessageDialog(this, "Izabrani termin je već zauzet za ovog terapeuta!", "Zauzet termin", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 boolean ok = dao.unesiSeansuProcedura(seansa);
 
                 if (ok) {

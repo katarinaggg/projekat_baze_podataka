@@ -1,13 +1,17 @@
 package savetovaliste.dao;
 
 import savetovaliste.model.Klijent;
+import savetovaliste.model.Objava;
 import savetovaliste.model.Seansa;
+import savetovaliste.model.TestRezultatDTO;
 import savetovaliste.utility.DatabaseConnection;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 
 public class SeansaDao {
 
@@ -307,4 +311,54 @@ public class SeansaDao {
             return false;
         }
     }
+    public List<TestRezultatDTO> vratiTestoveZaSeansu(int seansaId) {
+        List<TestRezultatDTO> testovi = new ArrayList<>();
+
+        String sql = "{CALL vrati_testove_za_seansu(?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, seansaId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String naziv = rs.getString("naziv");
+                    BigDecimal cena = rs.getBigDecimal("cena");
+                    String rezultat = rs.getString("rezultat");
+
+                    testovi.add(new TestRezultatDTO(naziv, cena, rezultat));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return testovi;
+    }
+
+    public List<Objava> getObjaveZaSeansu(int seansaId) {
+        List<Objava> lista = new ArrayList<>();
+        String sql = "SELECT datum_objave, primalac, razlog FROM objava_seanse WHERE seansa_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, seansaId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                lista.add(new Objava(
+                        rs.getDate("datum_objave"),
+                        rs.getString("primalac"),
+                        rs.getString("razlog")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
 }

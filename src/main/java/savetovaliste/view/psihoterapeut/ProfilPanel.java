@@ -1,4 +1,4 @@
-package savetovaliste.view;
+package savetovaliste.view.psihoterapeut;
 
 import savetovaliste.model.PsihoterapeutKandidat;
 
