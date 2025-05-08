@@ -26,6 +26,16 @@ public class PrvaSeansaFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Info labela za korisnika
+        JTextArea infoLabel = new JTextArea("Radno vreme savetovališta je od 09:00 do 20:00");
+        infoLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        infoLabel.setEditable(false);
+        infoLabel.setOpaque(false);
+        infoLabel.setFocusable(false);
+        infoLabel.setLineWrap(true);
+        infoLabel.setWrapStyleWord(true);
+        add(infoLabel, BorderLayout.NORTH);
+
         JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
         Font font = new Font("SansSerif", Font.PLAIN, 14);
@@ -126,7 +136,7 @@ public class PrvaSeansaFrame extends JFrame {
         boolean danas = isIstiDan(datum, new Date());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        for (int i = 9; i <= 17; i++) {
+        for (int i = 9; i <= 20; i++) {
             if (!danas || i > currentHour) {
                 timeComboBox.addItem(LocalTime.of(i, 0).format(formatter));
             }

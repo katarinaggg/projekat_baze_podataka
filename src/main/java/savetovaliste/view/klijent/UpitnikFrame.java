@@ -284,6 +284,10 @@ public class UpitnikFrame extends JFrame {
         add(panel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
 
+        panel.setBackground(new Color(187, 229, 252));
+        bottomPanel.setBackground(new Color(187, 229, 252));
+        getContentPane().setBackground(new Color(187, 229, 252));
+
         setVisible(true);
     }
 

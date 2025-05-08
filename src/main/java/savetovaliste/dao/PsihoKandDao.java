@@ -299,6 +299,9 @@ public class PsihoKandDao {
     }
 
 
+    // samo za brisanje onih novih koje smo dodavali
+    // posto ne moze ovako da se brise neko ko je u bazi
+    // vec povezan sa dosta drugih entiteta
     public void obrisiKandidataPoEmailu(String email) {
         String sql = "{CALL obrisi_kandidata_po_emailu(?)}";
 

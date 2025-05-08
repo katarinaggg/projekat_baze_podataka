@@ -1,13 +1,15 @@
-package savetovaliste.view.psihoterapeut;
+package savetovaliste.view.psihoterapeut.paneli;
 
 import savetovaliste.dao.KlijentDao;
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.model.Klijent;
 import savetovaliste.model.PsihoterapeutKandidat;
+import savetovaliste.view.psihoterapeut.frameovi.ZakaziSeansuFrame;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class SviKlijentiPanel extends JPanel {
@@ -40,6 +42,9 @@ public class SviKlijentiPanel extends JPanel {
         };
 
         tabela = new JTable(model);
+        tabela.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        tabela.setRowHeight(26);
+        tabela.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
         JScrollPane scrollPane = new JScrollPane(tabela);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -78,12 +83,14 @@ public class SviKlijentiPanel extends JPanel {
         SeansaDao seansaDao = new SeansaDao();
         List<Klijent> klijenti = seansaDao.vratiSveKlijente(psihoterapeut.getPsihoterapeutId());
 
+        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy.");
+
         for (Klijent k : klijenti) {
             model.addRow(new Object[]{
                     k.getIme(),
                     k.getPrezime(),
                     k.getPol(),
-                    k.getDatumRodjenja(),
+                    formater.format(k.getDatumRodjenja()),
                     k.getTelefon(),
                     k.getEmail(),
                     k.getOpis(),

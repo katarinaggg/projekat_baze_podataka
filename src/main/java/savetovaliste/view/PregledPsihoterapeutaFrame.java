@@ -2,11 +2,12 @@ package savetovaliste.view;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.dao.PsihoKandDao;
 import savetovaliste.view.klijent.UpitnikFrame;
-import savetovaliste.view.psihoterapeut.SviKlijentiPanel;
+import savetovaliste.view.psihoterapeut.paneli.SviKlijentiPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PregledPsihoterapeutaFrame extends JFrame {
@@ -42,6 +43,7 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         naslovLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel label = new JLabel("Naši psihoterapeuti:");
+        label.setFont(new Font("SansSerif", Font.PLAIN, 16));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         gornjiPanel.add(logoLabel);
@@ -57,7 +59,15 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         String[] kolone = {"Ime", "Prezime", "Datum rođenja", "Telefon", "Email", "Fakultet", "Stepen"};
         tableModel = new DefaultTableModel(kolone, 0);
         table = new JTable(tableModel);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.setRowHeight(22);
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        table.getColumnModel().getColumn(2).setPreferredWidth(90);
+        table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        table.getColumnModel().getColumn(4).setPreferredWidth(200);
+        table.getColumnModel().getColumn(5).setPreferredWidth(180);
+        table.getColumnModel().getColumn(6).setPreferredWidth(75);
 
         // Puni tabelu podacima
         ucitajPodatke();
@@ -90,7 +100,7 @@ public class PregledPsihoterapeutaFrame extends JFrame {
             }
         });
 
-        JButton izaberiPsihoterapeutaBtn = new JButton("Odaberite svog", odaberiPsihIkona);
+        JButton izaberiPsihoterapeutaBtn = new JButton("Pošalji upitnik", odaberiPsihIkona);
         izaberiPsihoterapeutaBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         izaberiPsihoterapeutaBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         izaberiPsihoterapeutaBtn.addActionListener(e -> {
@@ -111,10 +121,12 @@ public class PregledPsihoterapeutaFrame extends JFrame {
             }
         });
 
+        /*
         JButton obrisiBtn = new JButton("Obriši kandidata", obrisiIkona);
         obrisiBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         obrisiBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
         obrisiBtn.addActionListener(e -> obrisiSelektovanogKandidata());
+        */
 
         JPanel dugmiciPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 10));
         dugmiciPanel.setBackground(new Color(172, 230, 180));
@@ -122,12 +134,12 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         Dimension dugmeDimenzije = new Dimension(130, 80); // širina, visina
         prijavaBtn.setPreferredSize(dugmeDimenzije);
         registracijaBtn.setPreferredSize(dugmeDimenzije);
-        obrisiBtn.setPreferredSize(dugmeDimenzije);
+        //obrisiBtn.setPreferredSize(dugmeDimenzije);
         izaberiPsihoterapeutaBtn.setPreferredSize(dugmeDimenzije);
 
         dugmiciPanel.add(prijavaBtn);
         dugmiciPanel.add(registracijaBtn);
-        dugmiciPanel.add(obrisiBtn);
+        //dugmiciPanel.add(obrisiBtn);
         dugmiciPanel.add(izaberiPsihoterapeutaBtn);
 
         add(dugmiciPanel, BorderLayout.SOUTH);
@@ -137,11 +149,13 @@ public class PregledPsihoterapeutaFrame extends JFrame {
         PsihoKandDao repo = new PsihoKandDao();
         List<PsihoterapeutKandidat> kandidati = repo.getAllKandidati();
 
+        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy.");
+
         for (PsihoterapeutKandidat k : kandidati) {
             Object[] red = {
                     k.getIme(),
                     k.getPrezime(),
-                    k.getDatumRodjenja(),
+                    formater.format(k.getDatumRodjenja()),
                     k.getTelefon(),
                     k.getEmail(),
                     k.getFakultetNaziv(),

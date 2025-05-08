@@ -3,6 +3,8 @@ package savetovaliste.model;
 import java.util.Date;
 
 public class Objava {
+
+    private int ObjavaId;
     private Date datumObjave;
     private String primalac;
     private String razlog;
@@ -11,6 +13,17 @@ public class Objava {
         this.datumObjave = datumObjave;
         this.primalac = primalac;
         this.razlog = razlog;
+    }
+
+    public Objava() {
+    }
+
+    public int getObjavaId() {
+        return ObjavaId;
+    }
+
+    public void setObjavaId(int objavaId) {
+        ObjavaId = objavaId;
     }
 
     public Date getDatumObjave() {
@@ -23,5 +36,17 @@ public class Objava {
 
     public String getRazlog() {
         return razlog;
+    }
+
+    public void setDatumObjave(Date datumObjave) {
+        this.datumObjave = datumObjave;
+    }
+
+    public void setPrimalac(String primalac) {
+        this.primalac = primalac;
+    }
+
+    public void setRazlog(String razlog) {
+        this.razlog = razlog;
     }
 }

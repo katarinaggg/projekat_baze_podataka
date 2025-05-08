@@ -1,10 +1,10 @@
-package savetovaliste.view.psihoterapeut;
+package savetovaliste.view.psihoterapeut.frameovi;
 
 import com.toedter.calendar.JDateChooser;
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.model.Klijent;
 import savetovaliste.model.PsihoterapeutKandidat;
-import savetovaliste.view.psihoterapeut.BuduceSeansePanel;
+import savetovaliste.view.psihoterapeut.paneli.BuduceSeansePanel;
 
 import javax.swing.*;
 import java.awt.*;

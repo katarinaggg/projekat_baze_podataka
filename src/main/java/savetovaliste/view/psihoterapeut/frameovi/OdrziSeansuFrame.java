@@ -1,13 +1,20 @@
-package savetovaliste.view.psihoterapeut;
+package savetovaliste.view.psihoterapeut.frameovi;
 
 import com.toedter.calendar.JDateChooser;
 import savetovaliste.dao.CenaDao;
 import savetovaliste.dao.SeansaDao;
+import savetovaliste.dao.TestDao;
 import savetovaliste.model.Seansa;
+import savetovaliste.model.Test;
+import savetovaliste.view.psihoterapeut.paneli.BuduceSeansePanel;
+import savetovaliste.view.psihoterapeut.paneli.OdrzaneSeansePanel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OdrziSeansuFrame extends JFrame {
 
@@ -16,19 +23,19 @@ public class OdrziSeansuFrame extends JFrame {
     private JTextArea beleškeArea;
     private JTextField trajanjeField;
     private JCheckBox placanjeCheck;
-    private JCheckBox zlocinCheck;
-    private JCheckBox naSuduCheck;
 
-    // treba nam panel da ga osvezimo kada odrzimo neku seansu
-    // ona se vise nece prikazivati na tom panelu buducih
+    private JComboBox<Test> testCombo;
+    private JTextField rezultatField;
+    private DefaultTableModel testModel;
+    private JTable testTabela;
+
     private BuduceSeansePanel buduceSeansePanel;
-
-    // treba nam i panel s odrzanim seansama da bi
-    // ga osvezili kada dodamo ovu novu
     private OdrzaneSeansePanel odrzaneSeansePanel;
 
     private Seansa seansa;
 
+    private List<Test> izabraniTestovi = new ArrayList<>();
+    private List<String> rezultati = new ArrayList<>();
 
     public OdrziSeansuFrame(Seansa seansa, BuduceSeansePanel buduceSeansePanel, OdrzaneSeansePanel odrzaneSeansePanel) {
         this.seansa = seansa;
@@ -36,7 +43,7 @@ public class OdrziSeansuFrame extends JFrame {
         this.odrzaneSeansePanel = odrzaneSeansePanel;
 
         setTitle("Unos detalja o seansi");
-        setSize(500, 500);
+        setSize(450, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
@@ -73,7 +80,7 @@ public class OdrziSeansuFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy++;
         add(new JLabel("Beleške:"), gbc);
         gbc.gridx = 1;
-        beleškeArea = new JTextArea(5, 20);
+        beleškeArea = new JTextArea(4, 20);
         beleškeArea.setLineWrap(true);
         beleškeArea.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(beleškeArea);
@@ -82,13 +89,41 @@ public class OdrziSeansuFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy++;
         placanjeCheck = new JCheckBox("Plaćanje");
         add(placanjeCheck, gbc);
-        gbc.gridx = 1;
-        zlocinCheck = new JCheckBox("Zločin");
-        add(zlocinCheck, gbc);
 
         gbc.gridx = 0; gbc.gridy++;
-        naSuduCheck = new JCheckBox("Na sudu");
-        add(naSuduCheck, gbc);
+        add(new JLabel("Izaberi test:"), gbc);
+        gbc.gridx = 1;
+        testCombo = new JComboBox<>(new TestDao().ucitajSveTestove().toArray(new Test[0]));
+        add(testCombo, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        add(new JLabel("Rezultat testa:"), gbc);
+        gbc.gridx = 1;
+        rezultatField = new JTextField();
+        add(rezultatField, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        JButton dodajTestBtn = new JButton("Dodaj test");
+        add(dodajTestBtn, gbc);
+
+        gbc.gridx = 0; gbc.gridy++;
+        gbc.gridwidth = 2;
+        testModel = new DefaultTableModel(new Object[]{"Test", "Rezultat"}, 0);
+        testTabela = new JTable(testModel);
+        JScrollPane testScroll = new JScrollPane(testTabela);
+        testScroll.setPreferredSize(new Dimension(350, 100));
+        add(testScroll, gbc);
+
+        dodajTestBtn.addActionListener(e -> {
+            Test izabran = (Test) testCombo.getSelectedItem();
+            String rez = rezultatField.getText();
+            if (izabran != null && !rez.isEmpty()) {
+                izabraniTestovi.add(izabran);
+                rezultati.add(rez);
+                testModel.addRow(new Object[]{izabran.getNaziv(), rez});
+                rezultatField.setText("");
+            }
+        });
 
         gbc.gridx = 0; gbc.gridy++;
         gbc.gridwidth = 2;
@@ -99,16 +134,9 @@ public class OdrziSeansuFrame extends JFrame {
             String trajanjeStr = trajanjeField.getText();
             String beleske = beleškeArea.getText();
             boolean placanje = placanjeCheck.isSelected();
-            boolean zlocin = zlocinCheck.isSelected();
-            boolean naSudu = naSuduCheck.isSelected();
 
             if (trajanjeStr.isEmpty() || beleske.isEmpty()){
-                JOptionPane.showMessageDialog(
-                        OdrziSeansuFrame.this,
-                        "Molimo popunite sva polja.",
-                        "Greška",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                JOptionPane.showMessageDialog(this, "Molimo popunite sva polja.", "Greška", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -123,27 +151,24 @@ public class OdrziSeansuFrame extends JFrame {
                 seansa.setTrajanje(trajanje);
                 seansa.setBeleske(beleske);
                 seansa.setPlacanje(placanje);
-                seansa.setZlocin(zlocin);
-                seansa.setNaSudu(naSudu);
                 seansa.setCenaId(cenaId);
 
                 boolean uspeh = new SeansaDao().oznaciSeansuKaoOdrzanu(seansa);
                 if (uspeh) {
-                    // iz ove izbacujemo
+                    for (int i = 0; i < izabraniTestovi.size(); i++) {
+                        new SeansaDao().dodajRezultatZaTest(seansa.getSeansaId(), izabraniTestovi.get(i).getTestId(), rezultati.get(i));
+                    }
                     buduceSeansePanel.osveziTabelu();
-                    // u ovu ubacujemo
                     odrzaneSeansePanel.osveziTabelu();
                     JOptionPane.showMessageDialog(this, "Seansa je uspešno uneta.");
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Greška pri čuvanju.", "Greška", JOptionPane.ERROR_MESSAGE);
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Greška prilikom obrade.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
-
         });
 
         setVisible(true);
