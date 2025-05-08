@@ -15,6 +15,8 @@ import java.util.List;
 
 public class SeansaDao {
 
+    // vraca ko ima samo jednu seansu kod ovog psih
+    // ta jedna moze da bude prva odrzana (nakon upitnika) ili zakazana
     public List<Klijent> vratiNoveKLijente(int psihoterapeutId) {
         List<Klijent> lista = new ArrayList<>();
         String sql = "SELECT k.*, p.pol AS pol_naziv " +
@@ -290,7 +292,7 @@ public class SeansaDao {
 
 
     public boolean oznaciSeansuKaoOdrzanu(Seansa s) {
-        String sql = "{CALL oznaci_seansu_kao_odrzanu(?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{CALL oznaci_seansu_kao_odrzanu(?, ?, ?, ?, ?)}";
 
         try (Connection conn = DatabaseConnection.getConnection();
              CallableStatement stmt = conn.prepareCall(sql)) {
@@ -299,9 +301,7 @@ public class SeansaDao {
             stmt.setString(2, s.getBeleske());
             stmt.setBigDecimal(3, s.getTrajanje());
             stmt.setBoolean(4, s.getPlacanje());
-            stmt.setBoolean(5, s.getZlocin());
-            stmt.setBoolean(6, s.getNaSudu());
-            stmt.setInt(7, s.getCenaId());
+            stmt.setInt(5, s.getCenaId());
 
             stmt.execute();
             return true;
@@ -311,6 +311,8 @@ public class SeansaDao {
             return false;
         }
     }
+
+
     public List<TestRezultatDTO> vratiTestoveZaSeansu(int seansaId) {
         List<TestRezultatDTO> testovi = new ArrayList<>();
 
@@ -340,7 +342,7 @@ public class SeansaDao {
 
     public List<Objava> getObjaveZaSeansu(int seansaId) {
         List<Objava> lista = new ArrayList<>();
-        String sql = "SELECT datum_objave, primalac, razlog FROM objava_seanse WHERE seansa_id = ?";
+        String sql = "SELECT objava_id, datum_objave, primalac, razlog FROM objava_seanse WHERE seansa_id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -348,12 +350,14 @@ public class SeansaDao {
             stmt.setInt(1, seansaId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                lista.add(new Objava(
-                        rs.getDate("datum_objave"),
-                        rs.getString("primalac"),
-                        rs.getString("razlog")
-                ));
+                Objava objava = new Objava();
+                objava.setObjavaId(rs.getInt("objava_id"));
+                objava.setDatumObjave(rs.getDate("datum_objave"));
+                objava.setPrimalac(rs.getString("primalac"));
+                objava.setRazlog(rs.getString("razlog"));
+                lista.add(objava);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -361,4 +365,45 @@ public class SeansaDao {
         return lista;
     }
 
+    public boolean objaviSeansu(int seansaId, java.sql.Date datum, String primalac, String razlog, boolean zlocin, boolean naSudu) {
+        String sql = "{CALL objavi_seansu(?, ?, ?, ?, ?, ?)}";
+        // zlocin i sud za updatovanje seanse
+        // od svega ostalog pravimo novi red u objavi
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, seansaId);
+            stmt.setDate(2, datum);
+            stmt.setString(3, primalac);
+            stmt.setString(4, razlog);
+            // za update seanse
+            stmt.setBoolean(5, zlocin);
+            stmt.setBoolean(6, naSudu);
+
+            stmt.execute();
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void dodajRezultatZaTest(int seansaId, int testId, String rezultat) {
+        String sql = "{CALL dodaj_rezultat_za_test(?, ?, ?)}";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, seansaId);
+            stmt.setInt(2, testId);
+            stmt.setString(3, rezultat);
+
+            stmt.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

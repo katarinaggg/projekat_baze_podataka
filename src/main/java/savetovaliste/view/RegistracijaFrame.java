@@ -290,7 +290,7 @@ public class RegistracijaFrame extends JFrame{
             if (psiho.registrujKandidata(k)) {
                 psiho.postaviRegistrovan(jmbgText);
 
-                int id = psiho.getIdPoJmbg(Long.parseLong(jmbgText));  // Dodaj ovu metodu u DAO ako ne postoji
+                int id = psiho.getIdPoJmbg(Long.parseLong(jmbgText));
 
 
                 JOptionPane.showMessageDialog(this, "Uspešna registracija!");

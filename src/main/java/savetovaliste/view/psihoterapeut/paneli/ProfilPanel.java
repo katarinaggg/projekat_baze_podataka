@@ -1,9 +1,10 @@
-package savetovaliste.view.psihoterapeut;
+package savetovaliste.view.psihoterapeut.paneli;
 
 import savetovaliste.model.PsihoterapeutKandidat;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 
 public class ProfilPanel extends JPanel {
 
@@ -38,17 +39,19 @@ public class ProfilPanel extends JPanel {
         infoPanel.setBackground(Color.WHITE);
         infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // razmak ispod naslova
 
+        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy.");
+
         infoPanel.add(kreirajInfoRed("ID", String.valueOf(psihoterapeut.getPsihoterapeutId())));
         infoPanel.add(kreirajInfoRed("Ime", psihoterapeut.getIme()));
         infoPanel.add(kreirajInfoRed("Prezime", psihoterapeut.getPrezime()));
-        infoPanel.add(kreirajInfoRed("Datum rođenja", psihoterapeut.getDatumRodjenja().toString()));
+        infoPanel.add(kreirajInfoRed("Datum rođenja", formater.format(psihoterapeut.getDatumRodjenja())));
         infoPanel.add(kreirajInfoRed("Telefon", psihoterapeut.getTelefon()));
         infoPanel.add(kreirajInfoRed("Email", psihoterapeut.getEmail()));
         infoPanel.add(kreirajInfoRed("Prebivalište", psihoterapeut.getPrebivaliste()));
         infoPanel.add(kreirajInfoRed("Fakultet", psihoterapeut.getFakultetNaziv()));
         infoPanel.add(kreirajInfoRed("Stepen studija", psihoterapeut.getStepenNaziv()));
         infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        infoPanel.add(kreirajInfoRed("Datum sertifikacije", psihoterapeut.getDatumSertifikacije().toString()));
+        infoPanel.add(kreirajInfoRed("Datum sertifikacije", formater.format(psihoterapeut.getDatumSertifikacije())));
         infoPanel.add(kreirajInfoRed("Oblast", psihoterapeut.getOblastNaziv()));
 
         // === DODAVANJE U GLAVNI PANEL ===

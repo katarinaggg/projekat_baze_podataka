@@ -1,20 +1,21 @@
-package savetovaliste.view.psihoterapeut;
+package savetovaliste.view.psihoterapeut.paneli;
 
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.model.PsihoterapeutKandidat;
 import savetovaliste.model.Seansa;
+import savetovaliste.view.psihoterapeut.frameovi.OdrziSeansuFrame;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class BuduceSeansePanel extends JPanel {
 
     private JTable tabela;
     private DefaultTableModel model;
-
-    PsihoterapeutKandidat psihoterapeut;
+    private PsihoterapeutKandidat psihoterapeut;
 
     public BuduceSeansePanel(PsihoterapeutKandidat psihoterapeut, OdrzaneSeansePanel odrzaneSeansePanel) {
         this.psihoterapeut = psihoterapeut;
@@ -23,7 +24,7 @@ public class BuduceSeansePanel extends JPanel {
         setBackground(Color.WHITE);
 
         JLabel naslov = new JLabel("Termini budućih seansi", SwingConstants.CENTER);
-        naslov.setFont(new Font("Arial", Font.BOLD, 20));
+        naslov.setFont(new Font("Arial", Font.BOLD, 22));
         naslov.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(naslov, BorderLayout.NORTH);
 
@@ -37,7 +38,17 @@ public class BuduceSeansePanel extends JPanel {
         };
 
         tabela = new JTable(model);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        tabela.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        tabela.setRowHeight(28);
+        tabela.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 16));
+
+        JScrollPane scrollPane = new JScrollPane(tabela);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // SAKRIVANJE KOLONE "Seansa ID"
+        tabela.getColumnModel().getColumn(3).setMinWidth(0);
+        tabela.getColumnModel().getColumn(3).setMaxWidth(0);
+        tabela.getColumnModel().getColumn(3).setWidth(0);
 
         JButton unesiBtn = new JButton("Unesi seansu");
         unesiBtn.setPreferredSize(new Dimension(200, 40));
@@ -55,7 +66,9 @@ public class BuduceSeansePanel extends JPanel {
                 return;
             }
 
+            // Čitamo ID iz sakrivene kolone
             int seansaId = (int) model.getValueAt(selectedRow, 3);
+
             SeansaDao dao = new SeansaDao();
             Seansa s = dao.nadjiSeansuPoId(seansaId);
 
@@ -70,19 +83,20 @@ public class BuduceSeansePanel extends JPanel {
     }
 
     public void osveziTabelu() {
-        model.setRowCount(0); // očisti prethodne redove
+        model.setRowCount(0);
 
         SeansaDao dao = new SeansaDao();
         List<Seansa> lista = dao.vratiBuduceSeanse(psihoterapeut.getPsihoterapeutId());
 
+        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy.");
+
         for (Seansa s : lista) {
             model.addRow(new Object[]{
-                    s.getDatum(),
+                    formater.format(s.getDatum()),
                     s.getVreme(),
                     s.getKlijentImePrezime(),
                     s.getSeansaId()
             });
         }
     }
-
 }
