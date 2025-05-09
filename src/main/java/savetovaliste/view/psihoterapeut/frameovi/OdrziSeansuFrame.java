@@ -2,6 +2,7 @@ package savetovaliste.view.psihoterapeut.frameovi;
 
 import com.toedter.calendar.JDateChooser;
 import savetovaliste.dao.CenaDao;
+import savetovaliste.dao.PlacanjeDao;
 import savetovaliste.dao.SeansaDao;
 import savetovaliste.dao.TestDao;
 import savetovaliste.model.Seansa;
@@ -155,9 +156,19 @@ public class OdrziSeansuFrame extends JFrame {
 
                 boolean uspeh = new SeansaDao().oznaciSeansuKaoOdrzanu(seansa);
                 if (uspeh) {
+                    // za svaki uradjeni test pravimo novu instancu entiteta
+                    // tj novi red za tabelu rezultati testova
                     for (int i = 0; i < izabraniTestovi.size(); i++) {
                         new SeansaDao().dodajRezultatZaTest(seansa.getSeansaId(), izabraniTestovi.get(i).getTestId(), rezultati.get(i));
                     }
+
+                    // ako je neko platio psihoterapeutu seansu (pun iznos) odmah
+                    // trea da se naprave nove instance tj redovi za entitet placanje
+                    // (za celu seansu i za testove ako su uradjeni jer se oni odmah placaju)
+                    if (placanje) {
+                        new PlacanjeDao().unesiPlacanjeZaCeluSeansu(seansa, izabraniTestovi);
+                    }
+
                     buduceSeansePanel.osveziTabelu();
                     odrzaneSeansePanel.osveziTabelu();
                     JOptionPane.showMessageDialog(this, "Seansa je uspešno uneta.");
