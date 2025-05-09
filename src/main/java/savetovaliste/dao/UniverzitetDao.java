@@ -9,7 +9,7 @@ import java.util.List;
 
 public class UniverzitetDao {
 
-    // U ovoj klasi koristi Statement jer je upit neparametrizovan:
+
     public List<Univerzitet> getSviUniverziteti() {
         List<Univerzitet> lista = new ArrayList<>();
         String query = "SELECT univerzitet_id, naziv FROM univerzitet ORDER BY naziv ASC";

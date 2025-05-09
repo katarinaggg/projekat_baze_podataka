@@ -2,13 +2,13 @@ package savetovaliste.dao;
 
 import savetovaliste.model.Dugovanje;
 import savetovaliste.model.Placanje;
+import savetovaliste.model.Seansa;
+import savetovaliste.model.Test;
 import savetovaliste.utility.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.List;
 
 public class PlacanjeDao {
@@ -221,4 +221,34 @@ public class PlacanjeDao {
         return lista;
     }
 
+    public void unesiPlacanjeZaCeluSeansu(Seansa seansa, List<Test> testovi) {
+
+       // procedura za unos uplate seanse
+        String sql = "CALL unesi_placanja_za_celu_seansu(?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setInt(1, seansa.getSeansaId());
+            stmt.setString(2, "RSD");
+            stmt.setString(3, "G");
+
+            stmt.execute();
+
+            // ubacivanje plaćanja za testove
+            for (Test test : testovi) {                             // za svaki test unosio placanje
+                CallableStatement testStmt = conn.prepareCall("CALL unesi_placanje_testa(?, ?, ?, ?, ?)");
+                testStmt.setDate(1, new java.sql.Date(System.currentTimeMillis()));
+                testStmt.setBigDecimal(2, BigDecimal.valueOf(test.getCena()));
+                testStmt.setString(3, "TEST");
+                testStmt.setString(4, test.getNaziv());
+                testStmt.setInt(5, seansa.getSeansaId());
+                testStmt.execute();
+                testStmt.close();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

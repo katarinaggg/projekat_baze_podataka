@@ -39,6 +39,7 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         JButton btnOdrzaneSeanse = new JButton("Odrzane seanse");
         JButton btnBuduceSeanse = new JButton("Termini buducih seansi");
         JButton btnPLacanja = new JButton("Placanja");
+        JButton btnIzvestaj = new JButton("Izveštaj");
 
         btnProfil.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnNoviKlijenti.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -46,6 +47,7 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         btnOdrzaneSeanse.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnBuduceSeanse.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnPLacanja.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnIzvestaj.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         ImageIcon logoIkonica = new ImageIcon("src/main/resources/logo.png");
         Image logoSlika = logoIkonica.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
@@ -65,6 +67,8 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         leviPanel.add(btnBuduceSeanse);
         leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         leviPanel.add(btnPLacanja);
+        leviPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        leviPanel.add(btnIzvestaj);
 
         JButton btnOdjava = new JButton("Odjavi se");
         btnOdjava.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -103,6 +107,7 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         desniPanel.add(odrzaneSeansePanel, "Odrzane seanse");
         desniPanel.add(buduceSeansePanel, "Termini buducih seansi");
         desniPanel.add(new PlacanjaPanel(psihoterapeut), "Placanja");
+        desniPanel.add(new IzvestajPanel(psihoterapeut), "Izvestaj");
 
         add(desniPanel, BorderLayout.CENTER);
 
@@ -113,6 +118,7 @@ public class ProfilPsihoterapeutaFrame extends JFrame {
         btnOdrzaneSeanse.addActionListener(e -> cardLayout.show(desniPanel, "Odrzane seanse"));
         btnBuduceSeanse.addActionListener(e -> cardLayout.show(desniPanel, "Termini buducih seansi"));
         btnPLacanja.addActionListener(e -> cardLayout.show(desniPanel, "Placanja"));
+        btnIzvestaj.addActionListener(e -> cardLayout.show(desniPanel, "Izvestaj"));
 
         addWindowListener(new WindowAdapter() {
             @Override

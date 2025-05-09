@@ -88,12 +88,13 @@ public class BuduceSeansePanel extends JPanel {
         SeansaDao dao = new SeansaDao();
         List<Seansa> lista = dao.vratiBuduceSeanse(psihoterapeut.getPsihoterapeutId());
 
-        SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy.");
+        SimpleDateFormat datumFormater = new SimpleDateFormat("dd.MM.yyyy.");
+        SimpleDateFormat vremeFormatter = new SimpleDateFormat("HH:mm");
 
         for (Seansa s : lista) {
             model.addRow(new Object[]{
-                    formater.format(s.getDatum()),
-                    s.getVreme(),
+                    datumFormater.format(s.getDatum()),
+                    vremeFormatter.format(s.getVreme()),
                     s.getKlijentImePrezime(),
                     s.getSeansaId()
             });
