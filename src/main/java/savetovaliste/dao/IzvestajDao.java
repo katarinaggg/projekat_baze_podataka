@@ -132,7 +132,7 @@ public class IzvestajDao {
 
     public String prosecnoVremePocetkaSeansi(int psihoterapeutId) {
         String sql = """
-        SELECT AVG(TIME_TO_SEC(vreme)) AS proseks
+        SELECT AVG(TIME_TO_SEC(vreme)) AS prosek
         FROM seansa
         WHERE psihoterapeut_kandidat_id = ? AND odrzana = true
     """;
@@ -143,10 +143,10 @@ public class IzvestajDao {
             stmt.setInt(1, psihoterapeutId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    double proseks = rs.getDouble("proseks");
-                    if (proseks > 0) {
+                    double prosek = rs.getDouble("prosek");
+                    if (prosek > 0) {
                         // Zaokruži na najbliži ceo sat u sekundama
-                        int roundedSeconds = ((int) Math.round(proseks / 3600.0)) * 3600;
+                        int roundedSeconds = ((int) Math.round(prosek / 3600.0)) * 3600;
 
                         // Konvertuj u hh:mm
                         int hours = (roundedSeconds / 3600) % 24;
