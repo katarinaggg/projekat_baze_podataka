@@ -1,0 +1,6 @@
+# Template for the local database configuration.
+# Copy this file to "db.properties" (in the project root) and fill in your own MySQL credentials.
+# db.properties is listed in .gitignore and must never be committed.
+db.url=jdbc:mysql://localhost:3306/savetovaliste
+db.user=
+db.password=
