@@ -6,10 +6,6 @@
 -- inicijalne (test) podatke i sve stored procedure.
 -- Pokrenuti je JEDNOM, u celini, nad MySQL serverom na kome baza
 -- savetovaliste jos ne postoji (CREATE TABLE nema IF NOT EXISTS).
---
--- Izmene u odnosu na originalnu predatu skriptu:
---  * FK rad_pod_supervizijom_psihoterapeut_kandidat sada je na koloni kandidat_id
---  * ispravljeno "DELIMITER;" u "DELIMITER ;" posle procedure dodaj_seansu
 -- =====================================================================
 
 CREATE DATABASE IF NOT EXISTS savetovaliste;
